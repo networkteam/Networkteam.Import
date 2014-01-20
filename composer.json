@@ -1,0 +1,13 @@
+{
+	"name": "networkteam/import",
+	"version": "1.0.0-beta",
+	"autoload": {
+		"psr-0": { "Networkteam\\": "lib" }
+	},
+	"require":{
+		"php": "> 5.3.0",
+		"Psr/Log": "~1.0",
+		"phpoffice/phpexcel": "1.7.9",
+		"symfony/expression-language": "2.4.*"
+	}
+}
