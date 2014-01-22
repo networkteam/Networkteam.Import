@@ -63,6 +63,13 @@ class NullDataProvider implements DataProviderInterface {
 	}
 
 	/**
+	 * @param array $options
+	 * @return mixed|void
+	 */
+	public function setOptions(array $options) {
+	}
+
+	/**
 	 * @throws \Networkteam\Import\Exception
 	 */
 	public function open() {

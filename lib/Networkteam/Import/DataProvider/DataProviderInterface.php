@@ -22,4 +22,10 @@ interface DataProviderInterface extends \Iterator {
 	 * @throws \Networkteam\Import\Exception
 	 */
 	public function close();
+
+	/**
+	 * @param array $options
+	 * @return mixed
+	 */
+	public function setOptions(array $options);
 }

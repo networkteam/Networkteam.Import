@@ -8,8 +8,9 @@ namespace Networkteam\Import\DataProvider;
 
 class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProviderInterface {
 
-	const DATA_START_ROW = 3;
+	const KEY_SOURCE_FILE = 'excel.source_file';
 
+	const KEY_HEADER_OFFSET = 'excel.header_offset';
 	/**
 	 * @var \PHPExcel
 	 */
@@ -21,14 +22,23 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 	protected $iterator;
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $fileName;
+	protected $fieldNames;
 
 	/**
 	 * @var array
 	 */
-	protected $fieldNames;
+	protected $options = array(self::KEY_HEADER_OFFSET => 1);
+
+
+	/**
+	 * @param array $options
+	 * @return mixed|void
+	 */
+	public function setOptions(array $options) {
+		$this->options = array_merge($this->options, $options);
+	}
 
 	/**
 	 * @return \PHPExcel_Worksheet_Row
@@ -39,8 +49,8 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 		}
 
 		$dataRow = $this->iterator->current();
-		if ($dataRow->getRowIndex() < self::DATA_START_ROW) {
-			$this->iterator->seek(self::DATA_START_ROW);
+		if ($dataRow->getRowIndex() <= $this->options[self::KEY_HEADER_OFFSET]) {
+			$this->iterator->seek($this->options[self::KEY_HEADER_OFFSET] + 1);
 			$dataRow = $this->iterator->current();
 		}
 
@@ -120,7 +130,7 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 	 * @throws \Networkteam\Import\Exception
 	 */
 	public function open() {
-		$worksheet = \PHPExcel_IOFactory::load($this->fileName);
+		$worksheet = \PHPExcel_IOFactory::load($this->getFileName());
 		$this->initializeIteratorAndFieldNames($worksheet);
 	}
 
@@ -144,7 +154,18 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 	 * @param string $filename
 	 */
 	public function setFileName($filename) {
-		$this->fileName = $filename;
+		$this->options[self::KEY_SOURCE_FILE] = $filename;
+	}
+
+	/**
+	 * @return mixed
+	 * @throws \InvalidArgumentException
+	 */
+	protected function getFileName() {
+		if(isset($this->options[self::KEY_SOURCE_FILE])) {
+			return $this->options[self::KEY_SOURCE_FILE];
+		}
+		throw new \InvalidArgumentException('Missing options excel.source_file for ExcelDataProvider');
 	}
 
 	/**

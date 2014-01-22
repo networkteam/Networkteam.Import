@@ -24,6 +24,7 @@ class ExcelDataProviderTest extends \PHPUnit_Framework_TestCase {
 		$this->dataProvider = new \Networkteam\Import\DataProvider\ExcelDataProvider();
 		$this->dataProvider->setFileName(__DIR__ . '/../fixtures/excel_dataprovider_test.xlsx');
 		$this->dataProvider->open();
+		$this->dataProvider->setOptions(array('excel.header_offset' => 2));
 	}
 
 	/**

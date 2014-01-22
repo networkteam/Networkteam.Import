@@ -75,4 +75,12 @@ abstract class BaseProviderDecorator implements DataProviderInterface {
 	public function close() {
 		$this->dataProvider->close();
 	}
+
+	/**
+	 * @param array $options
+	 * @return mixed|void
+	 */
+	public function setOptions(array $options) {
+		$this->dataProvider->setOptions($options);
+	}
 }

@@ -21,6 +21,8 @@ abstract class EntityImporter extends AbstractImporter {
 	 */
 	protected $customProperties = array();
 
+	protected $ignoreExceptions = FALSE;
+
 	/**
 	 * @param DataProviderInterface $dataProvider
 	 * @param ObjectManager $entityManager
@@ -33,12 +35,15 @@ abstract class EntityImporter extends AbstractImporter {
 
 	public function processImportData() {
 		foreach ($this->dataProvider as $dataHash) {
-			$entity = $this->processRow($dataHash);
 			try {
+				$entity = $this->processRow($dataHash);
 				$this->updateResultCounter($entity);
 				$this->entityManager->persist($entity);
-			} catch (\Doctrine\ORM\ORMException $e) {
+			} catch (\Exception $e) {
 				$this->importResult->addError($e->getMessage());
+				if(!$this->ignoreExceptions) {
+					throw $e;
+				}
 			}
 		}
 		$this->entityManager->flush();
@@ -69,7 +74,7 @@ abstract class EntityImporter extends AbstractImporter {
 	 * @param array $dataHash
 	 * @return Object
 	 */
-	protected function updateObjectFromDataHash($object, $dataHash) {
+	protected function updateObjectFromDataHash($object, array $dataHash) {
 		foreach ($dataHash as $propertyName => $property) {
 			if (!in_array($propertyName, $this->customProperties)) {
 				$this->updateProperty($object, $dataHash, $propertyName);
