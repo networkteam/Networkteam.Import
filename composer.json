@@ -7,7 +7,9 @@
 	"require":{
 		"php": "> 5.3.0",
 		"Psr/Log": "~1.0",
-		"phpoffice/phpexcel": "1.7.9",
 		"symfony/expression-language": "2.4.*"
+	},
+	"suggest": {
+		"phpoffice/phpexcel": "Allows more advanced logging of the application flow"
 	}
 }
