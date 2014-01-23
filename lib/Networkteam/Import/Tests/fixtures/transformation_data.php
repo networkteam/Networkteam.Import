@@ -7,4 +7,5 @@ return array(
 	'bezeichnung' => 'Satsch',
 	'vorname' => 'Harald',
 	'email-adresse' => 'foo@example.com',
+	'dummyField' => NULL,
 );

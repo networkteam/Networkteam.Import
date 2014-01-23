@@ -79,7 +79,7 @@ class TransformingProviderDecoratorTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @expectedException \Networkteam\Import\Exception\ConfigurationException
-	 * @expectedExceptionMessage The key "does_not_exist" was not found in the list of keys: bezeichnung, vorname, email-adresse
+	 * @expectedExceptionMessage The key "does_not_exist" was not found in the list of keys: bezeichnung, vorname, email-adresse, dummyField
 	 */
 	public function exceptionIsThrownForInvalidConfiguration() {
 		$configuration = array(
@@ -133,6 +133,26 @@ class TransformingProviderDecoratorTest extends \PHPUnit_Framework_TestCase {
 			'lastName' => 'Satsch',
 			'parent' => '1234',
 			'name' => 'Harald Satsch'
+		), $this->transformingProviderDecorator->current());
+	}
+
+	/**
+	 * @test
+	 */
+	public function nullValuesInInputDataIsAcceptedAsPresent() {
+		$configuration = array(
+			'firstName' => 'vorname',
+			'dummyField' => 'dummyField',
+		);
+		$this->dataProvider
+			->expects($this->atLeastOnce())
+			->method('current')
+			->will($this->returnValue(self::getDataRow()));
+
+		$this->transformingProviderDecorator->setMapping($configuration);
+		$this->assertEquals(array(
+			'firstName' => 'Harald',
+			'dummyField' => NULL
 		), $this->transformingProviderDecorator->current());
 	}
 }

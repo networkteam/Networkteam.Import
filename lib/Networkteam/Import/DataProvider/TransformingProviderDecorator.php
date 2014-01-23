@@ -42,7 +42,7 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 		$transformedData = array();
 		foreach ($this->mapping as $transformedKey => $rawDataFieldKey) {
 			if ($this->keyIsExpression($rawDataFieldKey)) {
-				$transformedData[$transformedKey] = $this->getFieldValueByExpression($rawDataFieldKey, $rawData);
+				$transformedData[$transformedKey] = $this->getFieldValueByExpression($rawData, $rawDataFieldKey);
 			} else {
 				$transformedData[$transformedKey] = $this->getFieldDataByName($rawData, $rawDataFieldKey);
 			}
@@ -57,7 +57,7 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 	 * @throws \Networkteam\Import\Exception\ConfigurationException
 	 */
 	protected function getFieldDataByName(array $rawData, $rawFieldIdentifier) {
-		if (!isset($rawData[$rawFieldIdentifier])) {
+		if (!array_key_exists($rawFieldIdentifier, $rawData)) {
 			$exceptionMessage = sprintf('The key "%s" was not found in the list of keys: %s', $rawFieldIdentifier, implode(', ', array_keys($rawData)));
 			throw new \Networkteam\Import\Exception\ConfigurationException($exceptionMessage, 1389792450);
 		}
@@ -80,7 +80,7 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 	 * @param array $rawData
 	 * @return string
 	 */
-	protected function getFieldValueByExpression($rawDataFieldKey, array $rawData) {
+	protected function getFieldValueByExpression(array $rawData, $rawDataFieldKey) {
 		$exp = array();
 		preg_match(self::EXPRESSION_REGEX, $rawDataFieldKey, $exp);
 		$expression = new \Symfony\Component\ExpressionLanguage\ExpressionLanguage();
