@@ -46,7 +46,6 @@ class EntityImporterTestCase extends \PHPUnit_Framework_TestCase {
 			->will($this->returnValue(\Doctrine\ORM\UnitOfWork::STATE_DETACHED));
 
 		$this->entityManager->shouldReceive(array('getUnitOfWork' => $this->unitOfWork));
-		$this->entityManager->shouldReceive('flush');
 	}
 
 	/**
