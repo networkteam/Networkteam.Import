@@ -123,7 +123,9 @@ abstract class EntityImporter extends AbstractImporter {
 				$this->importResult->incCountImported();
 				break;
 			case \Doctrine\ORM\UnitOfWork::STATE_MANAGED:
-				$this->importResult->incCountUpdated();
+				if ($this->entityManager->getUnitOfWork()->isScheduledForUpdate($entity)) {
+					$this->importResult->incCountUpdated();
+				}
 				break;
 			case \Doctrine\ORM\UnitOfWork::STATE_REMOVED:
 				$this->importResult->incCountDeleted();

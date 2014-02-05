@@ -5,8 +5,6 @@ namespace Networkteam\Import\Tests;
  *  (c) 2014 networkteam GmbH - all rights reserved
  ***************************************************************/
 
-use Networkteam\KircheHamburgAddressBundle\Importer\EntityImporter;
-
 class EntityImporterTestCase extends \PHPUnit_Framework_TestCase {
 
 	/**
