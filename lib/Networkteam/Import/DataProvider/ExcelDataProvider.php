@@ -113,7 +113,7 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 	 * Returns true on success or false on failure.
 	 */
 	public function valid() {
-		return $this->iterator->valid();
+		return $this->iterator->key() <= $this->workSheet->getActiveSheet()->getHighestDataRow();
 	}
 
 	/**
