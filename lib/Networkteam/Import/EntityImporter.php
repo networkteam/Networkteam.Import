@@ -6,7 +6,7 @@ namespace Networkteam\Import;
  ***************************************************************/
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\UnitOfWork;
 use Networkteam\Import\DataProvider\DataProviderInterface;
 
 abstract class EntityImporter extends AbstractImporter {
@@ -21,12 +21,14 @@ abstract class EntityImporter extends AbstractImporter {
 	 */
 	protected $customProperties = array();
 
+	/**
+	 * @var boolean
+	 */
 	protected $ignoreExceptions = FALSE;
 
 	/**
 	 * @param DataProviderInterface $dataProvider
 	 * @param ObjectManager $entityManager
-	 * @param EntityRepository $repository
 	 */
 	public function __construct(DataProviderInterface $dataProvider, ObjectManager $entityManager) {
 		parent::__construct($dataProvider);
@@ -37,11 +39,13 @@ abstract class EntityImporter extends AbstractImporter {
 		foreach ($this->dataProvider as $dataHash) {
 			try {
 				$entity = $this->processRow($dataHash);
-				$this->updateResultCounter($entity);
-				$this->entityManager->persist($entity);
+				if ($entity !== NULL) {
+					$this->updateResultCounter($entity);
+					$this->entityManager->persist($entity);
+				}
 			} catch (\Exception $e) {
 				$this->importResult->addError($e->getMessage());
-				if(!$this->ignoreExceptions) {
+				if (!$this->ignoreExceptions) {
 					throw $e;
 				}
 			}
@@ -50,12 +54,11 @@ abstract class EntityImporter extends AbstractImporter {
 	}
 
 	/**
-	 * @param array $object
+	 * @param array $dataHash
+	 * @return Object
 	 */
 	protected function processRow(array $dataHash) {
-		$persistableObject = $this->mapValuesToObject($dataHash);
-
-		return $persistableObject;
+		return $this->mapValuesToObject($dataHash);
 	}
 
 	/**
@@ -64,8 +67,9 @@ abstract class EntityImporter extends AbstractImporter {
 	 */
 	protected function mapValuesToObject(array $dataHash) {
 		$object = $this->fetchObjectToImport($dataHash);
-		$this->updateObjectFromDataHash($object, $dataHash);
-
+		if ($object !== NULL) {
+			$this->updateObjectFromDataHash($object, $dataHash);
+		}
 		return $object;
 	}
 
@@ -119,15 +123,15 @@ abstract class EntityImporter extends AbstractImporter {
 	protected function updateResultCounter($entity) {
 		$state = $this->entityManager->getUnitOfWork()->getEntityState($entity);
 		switch ($state) {
-			case \Doctrine\ORM\UnitOfWork::STATE_NEW:
+			case UnitOfWork::STATE_NEW:
 				$this->importResult->incCountImported();
 				break;
-			case \Doctrine\ORM\UnitOfWork::STATE_MANAGED:
+			case UnitOfWork::STATE_MANAGED:
 				if ($this->entityManager->getUnitOfWork()->isScheduledForUpdate($entity)) {
 					$this->importResult->incCountUpdated();
 				}
 				break;
-			case \Doctrine\ORM\UnitOfWork::STATE_REMOVED:
+			case UnitOfWork::STATE_REMOVED:
 				$this->importResult->incCountDeleted();
 				break;
 		}

@@ -14,11 +14,7 @@ abstract class AbstractDataProvider implements DataProviderInterface {
 
 	/**
 	 * @param array $options
-	 * @return mixed|void
 	 */
-	public function setOptions(array $options) {
-		foreach($options as $option) {
+	public function setOptions(array $options) {}
 
-		}
-	}
 }

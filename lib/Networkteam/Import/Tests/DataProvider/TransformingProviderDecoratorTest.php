@@ -8,7 +8,7 @@ namespace Networkteam\Import\Tests\DataProvider;
 class TransformingProviderDecoratorTest extends \PHPUnit_Framework_TestCase {
 
 	/**
-	 * @var \Networkteam\KircheHamburgAddressBundle\Importer\DataProvider\TransformingProviderDecorator
+	 * @var \Networkteam\Import\DataProvider\TransformingProviderDecorator
 	 */
 	protected $transformingProviderDecorator;
 
@@ -26,15 +26,15 @@ class TransformingProviderDecoratorTest extends \PHPUnit_Framework_TestCase {
 	 * @return array
 	 */
 	protected function getDataRow() {
-		if (self::$dataRow === NULL) {
-			self::$dataRow = require_once __DIR__ . '/../fixtures/transformation_data.php';
-		}
-
-		return self::$dataRow;
+		return array(
+			'bezeichnung' => 'Satsch',
+			'vorname' => 'Harald',
+			'email-adresse' => 'foo@example.com',
+			'dummyField' => NULL,
+		);
 	}
 
 	public function setUp() {
-		parent::setUp();
 		$this->dataProvider = $this->getMockBuilder('Networkteam\Import\DataProvider\DataProviderInterface')
 			->disableArgumentCloning()
 			->getMock();
@@ -51,7 +51,7 @@ class TransformingProviderDecoratorTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function setConfigurationIsCallable() {
+	public function setMappingIsCallable() {
 		$configuration = array();
 		$this->transformingProviderDecorator->setMapping($configuration);
 	}
@@ -59,7 +59,7 @@ class TransformingProviderDecoratorTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function dataIsTransformedAccordingConfiguration() {
+	public function dataIsTransformedAccordingToMapping() {
 		$configuration = array(
 			'firstName' => 'vorname',
 			'lastName' => 'bezeichnung'
@@ -81,7 +81,7 @@ class TransformingProviderDecoratorTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException \Networkteam\Import\Exception\ConfigurationException
 	 * @expectedExceptionMessage The key "does_not_exist" was not found in the list of keys: bezeichnung, vorname, email-adresse, dummyField
 	 */
-	public function exceptionIsThrownForInvalidConfiguration() {
+	public function exceptionIsThrownForInvalidMapping() {
 		$configuration = array(
 			'firstName' => 'does_not_exist',
 		);
@@ -97,7 +97,7 @@ class TransformingProviderDecoratorTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function configurationCanContainExpressions() {
+	public function mappingCanContainExpressions() {
 		$configuration = array(
 			'firstName' => 'vorname',
 			'lastName' => 'bezeichnung',

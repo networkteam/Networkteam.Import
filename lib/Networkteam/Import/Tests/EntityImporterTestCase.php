@@ -5,6 +5,8 @@ namespace Networkteam\Import\Tests;
  *  (c) 2014 networkteam GmbH - all rights reserved
  ***************************************************************/
 
+use Doctrine\ORM\UnitOfWork;
+
 class EntityImporterTestCase extends \PHPUnit_Framework_TestCase {
 
 	/**
@@ -28,7 +30,6 @@ class EntityImporterTestCase extends \PHPUnit_Framework_TestCase {
 	protected $unitOfWork;
 
 	public function setUp() {
-		parent::setUp();
 		$this->entityManager = \Mockery::mock('Doctrine\Common\Persistence\ObjectManager', array('getUnitOfWork' => $this->unitOfWork));
 
 		$this->repository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')
@@ -41,13 +42,14 @@ class EntityImporterTestCase extends \PHPUnit_Framework_TestCase {
 			->getMock();
 		$this->unitOfWork->expects($this->any())
 			->method('getEntityState')
-			->will($this->returnValue(\Doctrine\ORM\UnitOfWork::STATE_DETACHED));
+			->will($this->returnValue(UnitOfWork::STATE_DETACHED));
 
 		$this->entityManager->shouldReceive(array('getUnitOfWork' => $this->unitOfWork));
 	}
 
 	/**
 	 * @param array $returnValues
+	 * @return \PHPUnit_Framework_MockObject_MockObject
 	 */
 	protected function getDataProviderMock(array $returnValues) {
 		$organisationTransformer = $this->getMockBuilder('Networkteam\Import\DataProvider\TransformingProviderDecorator')
@@ -114,7 +116,7 @@ class EntityImporterTestCase extends \PHPUnit_Framework_TestCase {
 			->will(
 				$this->returnCallback(
 					function () use ($iteratorData) {
-						return isset($iteratorData->array[$iteratorData->position]);
+						return array_key_exists($iteratorData->position, $iteratorData->array);
 					}
 				)
 			);

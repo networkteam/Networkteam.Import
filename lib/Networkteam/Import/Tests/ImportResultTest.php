@@ -1,9 +1,9 @@
 <?php
+namespace Networkteam\Import\Tests;
+
 /***************************************************************
  *  (c) 2014 networkteam GmbH - all rights reserved
  ***************************************************************/
-
-namespace Networkteam\Import\Tests;
 
 class ImportResultTest extends \PHPUnit_Framework_TestCase {
 

@@ -9,7 +9,7 @@ namespace Networkteam\Import\DataProvider;
 interface DataProviderInterface extends \Iterator {
 
 	/**
-	 * @return array
+	 * @return array The current import item as an associative array (key / value)
 	 */
 	public function current();
 
@@ -25,7 +25,7 @@ interface DataProviderInterface extends \Iterator {
 
 	/**
 	 * @param array $options
-	 * @return mixed
 	 */
 	public function setOptions(array $options);
+
 }

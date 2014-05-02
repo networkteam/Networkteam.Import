@@ -1,14 +1,16 @@
 <?php
-namespace Networkteam\KircheHamburgAddressBundle\Tests\Importer\DataProvider;
+namespace Networkteam\Import\Tests\DataProvider;
 
 /***************************************************************
  *  (c) 2014 networkteam GmbH - all rights reserved
  ***************************************************************/
 
+use Networkteam\Import\DataProvider\ExcelDataProvider;
+
 class BrokenExcelDataProviderTest extends \PHPUnit_Framework_TestCase {
 
 	/**
-	 * @var \Networkteam\Import\DataProvider\ExcelDataProvider
+	 * @var ExcelDataProvider
 	 */
 	protected $dataProvider;
 
@@ -20,25 +22,21 @@ class BrokenExcelDataProviderTest extends \PHPUnit_Framework_TestCase {
 	);
 
 	public function setUp() {
-		parent::setUp();
-		$this->dataProvider = new \Networkteam\Import\DataProvider\ExcelDataProvider();
+		if (!class_exists('\PHPExcel')) {
+			$this->markTestSkipped('phpexcel not installed');
+		}
+
+		$this->dataProvider = new ExcelDataProvider();
 		$this->dataProvider->setFileName(__DIR__ . '/../fixtures/excel_dataprovider_test_empty_rows.xlsx');
-		$this->dataProvider->open();
 		$this->dataProvider->setOptions(array('excel.header_offset' => 1));
+		$this->dataProvider->open();
 	}
 
 	/**
 	 * @test
 	 */
 	public function readDataContainsOnlyValidRows() {
-		$expectedRowCount = 1;
-		$rowCount = 0;
-		foreach ($this->dataProvider as $row) {
-			$rowCount++;
-			if($rowCount > 1) {
-				break;
-			}
-		}
-		$this->assertEquals($expectedRowCount, $rowCount);
+		$this->assertCount(1, $this->dataProvider);
 	}
+
 }

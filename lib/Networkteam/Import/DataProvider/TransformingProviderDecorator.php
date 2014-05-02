@@ -1,5 +1,6 @@
 <?php
 namespace Networkteam\Import\DataProvider;
+
 /***************************************************************
  *  (c) 2014 networkteam GmbH - all rights reserved
  ***************************************************************/
@@ -21,11 +22,7 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 	}
 
 	/**
-	 * (PHP 5 &gt;= 5.0.0)<br/>
-	 * Return the current element
-	 *
-	 * @link http://php.net/manual/en/iterator.current.php
-	 * @return mixed Can return any type.
+	 * {@inheritdoc}
 	 */
 	public function current() {
 		$rawData = $this->dataProvider->current();
@@ -71,8 +68,7 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 	 */
 	protected function keyIsExpression($rawFieldIdentifier) {
 		$matches = array();
-		$result = preg_match(self::EXPRESSION_REGEX, $rawFieldIdentifier, $matches);
-		return $result;
+		return preg_match(self::EXPRESSION_REGEX, $rawFieldIdentifier, $matches);
 	}
 
 	/**

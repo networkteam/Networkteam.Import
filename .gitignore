@@ -1,3 +1,5 @@
 /report
+/bin
 /vendor
+/composer.lock
 .~*

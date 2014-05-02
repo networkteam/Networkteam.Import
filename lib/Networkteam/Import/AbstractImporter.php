@@ -20,7 +20,7 @@ abstract class AbstractImporter {
 	protected $dataProvider;
 
 	/**
-	 * @var \Networkteam\Import\ImportResult
+	 * @var ImportResult
 	 */
 	protected $importResult;
 
@@ -29,20 +29,20 @@ abstract class AbstractImporter {
 	 */
 	public function __construct(DataProviderInterface $dataProvider) {
 		$this->dataProvider = $dataProvider;
-		$this->importResult = new \Networkteam\Import\ImportResult();
+		$this->importResult = new ImportResult();
 	}
 
 	/**
-	 * @return \Networkteam\Import\ImportResult
+	 * @return ImportResult
 	 */
 	public function import() {
-		$this->log('Starting Import');
+		$this->log('Starting import');
 
 		try {
 			$this->dataProvider->open();
 		} catch (Exception $exception) {
 			$this->handleException($exception);
-			return;
+			return $this->importResult;
 		}
 
 		$this->processImportData();
@@ -52,6 +52,7 @@ abstract class AbstractImporter {
 		} catch (Exception $exception) {
 			$this->handleException($exception);
 		}
+
 		$this->log('Import finished');
 
 		return $this->importResult;
@@ -66,7 +67,7 @@ abstract class AbstractImporter {
 
 	/**
 	 * Implement this method to iterate over $this->dataProvider and import each row
-	 * fetched from the dataProvider
+	 * fetched from the data provider
 	 */
 	abstract public function processImportData();
 
@@ -85,6 +86,8 @@ abstract class AbstractImporter {
 	 * @throws \Exception
 	 */
 	protected function handleException(\Exception $exception) {
+		$this->importResult->addError($exception->getMessage());
+
 		if ($this->logger !== NULL) {
 			$this->logger->error($exception->getMessage());
 		} else {
