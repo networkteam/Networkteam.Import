@@ -139,6 +139,24 @@ class TransformingProviderDecoratorTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
+	public function functionsInExpressionsCanBeUsed() {
+		$configuration = array(
+			'name' => '${helper.substr(row["vorname"], 1, 4)}'
+		);
+		$this->dataProvider
+			->expects($this->atLeastOnce())
+			->method('current')
+			->will($this->returnValue(self::getDataRow()));
+
+		$this->transformingProviderDecorator->setMapping($configuration);
+		$this->assertEquals(array(
+			'name' => 'aral'
+		), $this->transformingProviderDecorator->current());
+	}
+
+	/**
+	 * @test
+	 */
 	public function nullValuesInInputDataIsAcceptedAsPresent() {
 		$configuration = array(
 			'firstName' => 'vorname',
@@ -155,4 +173,5 @@ class TransformingProviderDecoratorTest extends \PHPUnit_Framework_TestCase {
 			'dummyField' => NULL
 		), $this->transformingProviderDecorator->current());
 	}
+
 }

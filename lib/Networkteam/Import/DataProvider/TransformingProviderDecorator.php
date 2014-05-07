@@ -15,10 +15,22 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 	protected $mapping = array();
 
 	/**
+	 * @var Object
+	 */
+	protected $expressionHelper;
+
+	/**
 	 * @param array $mapping
 	 */
 	public function setMapping(array $mapping) {
 		$this->mapping = $mapping;
+	}
+
+	/**
+	 * @param Object $expressionHelper A helper object that will be registered in the expression language under the name "helper"
+	 */
+	public function setExpressionHelper($expressionHelper) {
+		$this->expressionHelper = $expressionHelper;
 	}
 
 	/**
@@ -80,9 +92,11 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 		$exp = array();
 		preg_match(self::EXPRESSION_REGEX, $rawDataFieldKey, $exp);
 		$expression = new \Symfony\Component\ExpressionLanguage\ExpressionLanguage();
-		return $expression->evaluate($exp[1], array(
-				'row' => $rawData
-			)
+		$context = array(
+			'row' => $rawData,
+			'helper' => $this->expressionHelper !== NULL ? $this->expressionHelper : new TransformerHelper()
 		);
+		return $expression->evaluate($exp[1], $context);
 	}
+
 }
