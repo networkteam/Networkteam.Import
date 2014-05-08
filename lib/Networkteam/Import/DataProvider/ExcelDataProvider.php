@@ -1,19 +1,26 @@
 <?php
-
 namespace Networkteam\Import\DataProvider;
-use InvalidArgumentException;
-use Networkteam\Import\Exception\ConfigurationException;
-use Networkteam\Import\Exception\InvalidStateException;
 
 /***************************************************************
  *  (c) 2014 networkteam GmbH - all rights reserved
  ***************************************************************/
 
+use Networkteam\Import\Exception\ConfigurationException;
+use Networkteam\Import\Exception\InvalidStateException;
+
 class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProviderInterface {
 
 	const KEY_FILENAME = 'provider.filename';
 
+	/**
+	 * Number of header rows that should be skipped when iterating over data rows
+	 */
 	const KEY_HEADER_OFFSET = 'excel.header_offset';
+
+	/**
+	 * Position of the header row for the field name map, 0-based index
+	 */
+	const KEY_HEADER_POSITION = 'excel.header_position';
 
 	/**
 	 * @var \PHPExcel
@@ -33,7 +40,10 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 	/**
 	 * @var array
 	 */
-	protected $options = array(self::KEY_HEADER_OFFSET => 1);
+	protected $options = array(
+		self::KEY_HEADER_OFFSET => 1,
+		self::KEY_HEADER_POSITION => 0
+	);
 
 	/**
 	 * @var boolean
@@ -53,7 +63,7 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 
 	/**
 	 * @return array
-	 * @throws \Networkteam\Import\Exception
+	 * @throws \Networkteam\Import\Exception\InvalidStateException
 	 */
 	protected function getDataSet() {
 		if ($this->workSheet === NULL) {
@@ -66,13 +76,21 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 	}
 
 	/**
-	 * Read the headlines from the first line of the sheet
+	 * Read from configured(excel.header_offset) line (defaults to first line) of the sheet
 	 */
 	protected function extractHeaderFieldNames() {
+		$this->iterator->seek($this->options[self::KEY_HEADER_POSITION] + 1);
+
+		$this->fieldNames = array();
+
 		$fieldNameRow = $this->iterator->current();
 		/** @var $cell \PHPExcel_Cell */
 		foreach ($fieldNameRow->getCellIterator() as $cell) {
 			$this->fieldNames[$cell->getColumn()] = mb_strtolower($cell->getValue(), 'UTF-8');
+		}
+
+		if ($this->fieldNames === array()) {
+			throw new ConfigurationException('Empty map of field names, please specify a correct KEY_HEADER_POSITION option', 1399546177);
 		}
 	}
 

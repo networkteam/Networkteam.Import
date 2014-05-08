@@ -51,14 +51,6 @@ class TransformingProviderDecoratorTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function setMappingIsCallable() {
-		$configuration = array();
-		$this->transformingProviderDecorator->setMapping($configuration);
-	}
-
-	/**
-	 * @test
-	 */
 	public function dataIsTransformedAccordingToMapping() {
 		$configuration = array(
 			'firstName' => 'vorname',
