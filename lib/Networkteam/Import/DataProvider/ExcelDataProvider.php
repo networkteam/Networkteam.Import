@@ -188,7 +188,10 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 		$dataArray = $this->getEmptyDataArray();
 		/** @var $cell \PHPExcel_Cell */
 		foreach ($dataRow->getCellIterator() as $cell) {
-			$dataArray[$this->fieldNames[$cell->getColumn()]] = $cell->getValue();
+			$cellColumn = $cell->getColumn();
+			if (array_key_exists($cellColumn, $this->fieldNames)) {
+				$dataArray[$this->fieldNames[$cellColumn]] = $cell->getValue();
+			}
 		}
 		return $dataArray;
 	}
