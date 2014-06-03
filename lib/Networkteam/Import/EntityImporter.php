@@ -12,7 +12,7 @@ use Networkteam\Import\DataProvider\DataProviderInterface;
 abstract class EntityImporter extends AbstractImporter {
 
 	/**
-	 * @var ObjectManager
+	 * @var \Doctrine\ORM\EntityManager
 	 */
 	protected $entityManager;
 
@@ -40,7 +40,6 @@ abstract class EntityImporter extends AbstractImporter {
 			try {
 				$entity = $this->processRow($dataHash);
 				if ($entity !== NULL) {
-					$this->updateResultCounter($entity);
 					$this->entityManager->persist($entity);
 				}
 			} catch (\Exception $e) {
@@ -50,7 +49,10 @@ abstract class EntityImporter extends AbstractImporter {
 				}
 			}
 		}
+
+		$this->entityManager->getEventManager()->addEventListener(array('onFlush'), $this);
 		$this->entityManager->flush();
+		$this->entityManager->getEventManager()->removeEventListener(array('onFlush'), $this);
 	}
 
 	/**
@@ -118,23 +120,24 @@ abstract class EntityImporter extends AbstractImporter {
 	}
 
 	/**
-	 * @param Object $entity
+	 * Handle onFlush event because we need the information about "dirty" entities from Doctrine to
+	 * know which entities will be updated.
+	 *
+	 * @param \Doctrine\ORM\Event\OnFlushEventArgs $event
 	 */
-	protected function updateResultCounter($entity) {
-		$state = $this->entityManager->getUnitOfWork()->getEntityState($entity);
-		switch ($state) {
-			case UnitOfWork::STATE_NEW:
-				$this->importResult->incCountImported();
-				break;
-			case UnitOfWork::STATE_MANAGED:
-				if ($this->entityManager->getUnitOfWork()->isScheduledForUpdate($entity)) {
-					$this->importResult->incCountUpdated();
-				}
-				break;
-			case UnitOfWork::STATE_REMOVED:
-				$this->importResult->incCountDeleted();
-				break;
+	public function onFlush(\Doctrine\ORM\Event\OnFlushEventArgs $event) {
+		$unitOfWork = $event->getEntityManager()->getUnitOfWork();
+
+		foreach ($unitOfWork->getScheduledEntityInsertions() as $entity) {
+			$this->entityWillBeInserted($entity);
 		}
+		foreach ($unitOfWork->getScheduledEntityUpdates() as $entity) {
+			$this->entityWillBeUpdated($entity);
+		}
+		foreach ($unitOfWork->getScheduledEntityDeletions() as $entity) {
+			$this->entityWillBeDeleted($entity);
+		}
+
 	}
 
 	/**
@@ -152,4 +155,32 @@ abstract class EntityImporter extends AbstractImporter {
 	 * @return Object
 	 */
 	abstract protected function fetchObjectToImport($dataHash);
+
+	/**
+	 * Handle entity insertion after processing data, override for custom counting
+	 *
+	 * @param Object $entity
+	 */
+	protected function entityWillBeInserted($entity) {
+		$this->importResult->incCountImported();
+	}
+
+	/**
+	 * Handle entity update after processing data, override for custom counting
+	 *
+	 * @param Object $entity
+	 */
+	protected function entityWillBeUpdated($entity) {
+		$this->importResult->incCountUpdated();
+	}
+
+	/**
+	 * Handle entity deletion after processing data, override for custom counting
+	 *
+	 * @param Object $entity
+	 */
+	protected function entityWillBeDeleted($entity) {
+		$this->importResult->incCountDeleted();
+	}
+
 }

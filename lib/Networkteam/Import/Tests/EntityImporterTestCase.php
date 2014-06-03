@@ -29,9 +29,12 @@ class EntityImporterTestCase extends \PHPUnit_Framework_TestCase {
 	 */
 	protected $unitOfWork;
 
-	public function setUp() {
-		$this->entityManager = \Mockery::mock('Doctrine\Common\Persistence\ObjectManager', array('getUnitOfWork' => $this->unitOfWork));
+	/**
+	 * @var \PHPUnit_Framework_MockObject_MockObject
+	 */
+	protected $eventManager;
 
+	public function setUp() {
 		$this->repository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')
 			->setMethods(array('findOneByImportIdentifier'))
 			->disableOriginalConstructor()
@@ -44,7 +47,9 @@ class EntityImporterTestCase extends \PHPUnit_Framework_TestCase {
 			->method('getEntityState')
 			->will($this->returnValue(UnitOfWork::STATE_DETACHED));
 
-		$this->entityManager->shouldReceive(array('getUnitOfWork' => $this->unitOfWork));
+		$this->eventManager = $this->getMockBuilder('Doctrine\Common\EventManager')->getMock();
+
+		$this->entityManager = \Mockery::mock('Doctrine\ORM\EntityManager', array('getUnitOfWork' => $this->unitOfWork, 'getEventManager' => $this->eventManager));
 	}
 
 	/**

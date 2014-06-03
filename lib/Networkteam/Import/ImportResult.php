@@ -31,16 +31,25 @@ class ImportResult {
 		$this->errors[] = $error;
 	}
 
-	public function incCountImported() {
-		$this->countImported++;
+	/**
+	 * @param integer $count
+	 */
+	public function incCountImported($count = 1) {
+		$this->countImported += $count;
 	}
 
-	public function incCountUpdated() {
-		$this->countUpdated++;
+	/**
+	 * @param integer $count
+	 */
+	public function incCountUpdated($count = 1) {
+		$this->countUpdated += $count;
 	}
 
-	public function incCountDeleted() {
-		$this->countDeleted++;
+	/**
+	 * @param integer $count
+	 */
+	public function incCountDeleted($count = 1) {
+		$this->countDeleted += $count;
 	}
 
 	/**
