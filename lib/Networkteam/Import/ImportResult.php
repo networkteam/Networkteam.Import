@@ -27,6 +27,11 @@ class ImportResult {
 	 */
 	protected $countDeleted = 0;
 
+	/**
+	 * @var integer
+	 */
+	protected $countProcessed = 0;
+
 	public function addError($error) {
 		$this->errors[] = $error;
 	}
@@ -74,9 +79,25 @@ class ImportResult {
 	}
 
 	/**
+	 * @return int
+	 */
+	public function getCountProcessed() {
+		return $this->countProcessed;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function getErrors() {
 		return $this->errors;
+	}
+
+	/**
+	 * Increment processed rows
+	 *
+	 * @param integer $count
+	 */
+	public function incCountProcessed($count = 1) {
+		$this->countProcessed += $count;
 	}
 }

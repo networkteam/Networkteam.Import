@@ -12,7 +12,7 @@ use Networkteam\Import\DataProvider\DataProviderInterface;
 abstract class EntityImporter extends AbstractImporter {
 
 	/**
-	 * @var \Doctrine\ORM\EntityManager
+	 * @var ObjectManager
 	 */
 	protected $entityManager;
 
@@ -42,6 +42,7 @@ abstract class EntityImporter extends AbstractImporter {
 				if ($entity !== NULL) {
 					$this->entityManager->persist($entity);
 				}
+				$this->importResult->incCountProcessed();
 			} catch (\Exception $e) {
 				$this->importResult->addError($e->getMessage());
 				if (!$this->ignoreExceptions) {
