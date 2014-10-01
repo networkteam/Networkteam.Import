@@ -86,7 +86,7 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 		$fieldNameRow = $this->iterator->current();
 		/** @var $cell \PHPExcel_Cell */
 		foreach ($fieldNameRow->getCellIterator() as $cell) {
-			$this->fieldNames[$cell->getColumn()] = mb_strtolower($cell->getValue(), 'UTF-8');
+			$this->fieldNames[$cell->getColumn()] = trim(mb_strtolower($cell->getValue(), 'UTF-8'));
 		}
 
 		if ($this->fieldNames === array()) {
