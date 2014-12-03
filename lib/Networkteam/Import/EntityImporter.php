@@ -5,14 +5,13 @@ namespace Networkteam\Import;
  *  (c) 2014 networkteam GmbH - all rights reserved
  ***************************************************************/
 
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\EntityManager;
 use Networkteam\Import\DataProvider\DataProviderInterface;
 
 abstract class EntityImporter extends AbstractImporter {
 
 	/**
-	 * @var ObjectManager
+	 * @var EntityManager
 	 */
 	protected $entityManager;
 
@@ -27,15 +26,24 @@ abstract class EntityImporter extends AbstractImporter {
 	protected $ignoreExceptions = FALSE;
 
 	/**
-	 * @param DataProviderInterface $dataProvider
-	 * @param ObjectManager $entityManager
+	 * @var array
 	 */
-	public function __construct(DataProviderInterface $dataProvider, ObjectManager $entityManager) {
+	protected $options;
+
+	/**
+	 * @param DataProviderInterface $dataProvider
+	 * @param EntityManager $entityManager
+	 */
+	public function __construct(DataProviderInterface $dataProvider, EntityManager $entityManager) {
 		parent::__construct($dataProvider);
 		$this->entityManager = $entityManager;
 	}
 
 	public function processImportData() {
+		if ($this->isDryRun()) {
+			$this->entityManager->beginTransaction();
+			$this->entityManager->getConnection()->setRollbackOnly();
+		}
 		foreach ($this->dataProvider as $dataHash) {
 			try {
 				$entity = $this->processRow($dataHash);
@@ -52,7 +60,17 @@ abstract class EntityImporter extends AbstractImporter {
 		}
 
 		$this->entityManager->getEventManager()->addEventListener(array('onFlush'), $this);
-		$this->entityManager->flush();
+		if ($this->isDryRun()) {
+			try {
+				$this->entityManager->flush();
+			} catch (\Doctrine\DBAL\ConnectionException $e) {
+				if ($e->getMessage() !== 'Transaction commit failed because the transaction has been marked for rollback only.') {
+					throw $e;
+				}
+			}
+		} else {
+			$this->entityManager->flush();
+		}
 		$this->entityManager->getEventManager()->removeEventListener(array('onFlush'), $this);
 	}
 
@@ -138,7 +156,13 @@ abstract class EntityImporter extends AbstractImporter {
 		foreach ($unitOfWork->getScheduledEntityDeletions() as $entity) {
 			$this->entityWillBeDeleted($entity);
 		}
+	}
 
+	/**
+	 * @param array $options
+	 */
+	public function setOptions(array $options) {
+		$this->options = $options;
 	}
 
 	/**
@@ -184,4 +208,10 @@ abstract class EntityImporter extends AbstractImporter {
 		$this->importResult->incCountDeleted();
 	}
 
+	/**
+	 * @return bool
+	 */
+	protected function isDryRun() {
+		return isset($this->options['dry-run']) && $this->options['dry-run'] === TRUE;
+	}
 }
