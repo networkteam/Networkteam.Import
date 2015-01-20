@@ -374,4 +374,13 @@ class TransformerHelper {
 		return md5($string);
 	}
 
+	/**
+	 * Check if field in array is set
+	 * @param array $array
+	 * @param string $field
+	 * @return boolean
+	 */
+	public function issetField($array, $field) {
+		return isset($array[$field]);
+	}
 }
