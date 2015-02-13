@@ -47,7 +47,7 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 	 * @param array $rawData
 	 * @return array
 	 */
-	protected function transformData(array $rawData) {
+	protected function transformData($rawData) {
 		$transformedData = array();
 		foreach ($this->mapping as $transformedKey => $rawDataFieldKey) {
 			if ($this->keyIsExpression($rawDataFieldKey)) {
@@ -88,7 +88,7 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 	 * @param array $rawData
 	 * @return string
 	 */
-	protected function getFieldValueByExpression(array $rawData, $rawDataFieldKey) {
+	protected function getFieldValueByExpression($rawData, $rawDataFieldKey) {
 		$exp = array();
 		preg_match(self::EXPRESSION_REGEX, $rawDataFieldKey, $exp);
 		$expression = new \Symfony\Component\ExpressionLanguage\ExpressionLanguage();
