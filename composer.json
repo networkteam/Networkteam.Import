@@ -11,7 +11,7 @@
 	"require":{
 		"php": "> 5.3.0",
 		"Psr/Log": "~1.0",
-		"symfony/expression-language": "2.4.*"
+		"symfony/expression-language": "~2.4"
 	},
 	"suggest": {
 		"phpoffice/phpexcel": "Used by the ExcelDataProvider to import Excel files"
