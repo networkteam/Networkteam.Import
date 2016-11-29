@@ -25,61 +25,11 @@ Usage
 Extend `AbstractImporter` and implement `processImportData` with your custom import logic. For Doctrine ORM entities the
 `EntityImporter` can be extended.
 
-Example
--------
+For further examples and how to handle different tasks look into the documentation
 
-	class AddressImporter extends \Networkteam\Import\EntityImporter {
-
-		/**
-		 * @var EntityRepository
-		 */
-		protected $repository;
-
-		/**
-		 * List of properties for custom processing (see handleCustomProperty)
-		 *
-		 * @var array
-		 */
-		protected $customProperties = array('phone_number');
-
-		/**
-		 * @param DataProviderInterface $dataProvider
-		 * @param ObjectManager $entityManager
-		 * @param EntityRepository $repository
-		 */
-		public function __construct(DataProviderInterface $dataProvider, ObjectManager $entityManager, EntityRepository $repository) {
-			parent::__construct($dataProvider, $entityManager);
-			$this->repository = $repository;
-		}
-
-		/**
-		 * Find an existing Address object by values from the import data or create a new one
-		 *
-		 * @param array $dataHash
-		 * @return Address
-		 */
-		protected function fetchObjectToImport($dataHash) {
-			$address = $this->repository->findOneByImportIdentification($dataHash['importSource'], $dataHash['externalId']);
-			if ($address === NULL) {
-				$address = new Address();
-			}
-
-			return $address;
-		}
-
-		/**
-		 * @param Object $entity The current entity to import
-		 * @param array $dataHash The full data hash of the current item
-		 * @param string $propertyName The property name of a custom property
-		 */
-		protected function handleCustomProperty($entity, array $dataHash, $propertyName) {
-			switch ($propertyName) {
-				case 'phone_number':
-					$object->addPhoneNumber(new PhoneNumber($dataHash[$propertyName]));
-			}
-		}
-
-	}
+- [Basic example](doc/basic_import.md)
+- [Transforming Data](doc/transforming_data.md)
+- [Validating Rows](doc/validating_rows.md)
 
 License
 -------
