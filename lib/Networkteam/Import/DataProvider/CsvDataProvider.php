@@ -17,6 +17,8 @@ class CsvDataProvider implements DataProviderInterface
 
     const KEY_FILENAME = 'csv.filename';
 
+    const KEY_FILE_HANDLE = 'csv.fileHandle';
+
     const KEY_USE_HEADER_ROW = 'csv.useHeaderRow';
 
     /**
@@ -58,6 +60,14 @@ class CsvDataProvider implements DataProviderInterface
         }
 
         throw new ConfigurationException(sprintf('Missing option %s for %s', self::KEY_FILENAME, __CLASS__), 1491316171);
+    }
+
+    protected function getFileHandle() {
+        if (isset($this->options[self::KEY_FILE_HANDLE])) {
+            return $this->options[self::KEY_FILE_HANDLE];
+        }
+
+        throw new ConfigurationException(sprintf('Missing option %s for %s', self::KEY_FILE_HANDLE, __CLASS__), 1491495926);
     }
 
     /**
@@ -148,11 +158,16 @@ class CsvDataProvider implements DataProviderInterface
      */
     public function open()
     {
-        if (!file_exists($this->getFilename()) || !is_readable($this->getFilename())) {
-            throw new \Exception("Could not open " . $this->getFilename() . " for reading! File does not exist.", 1491290697);
+        if (is_resource($this->getFileHandle())) {
+            $this->csvFileHandle = $this->getFileHandle();
         }
+        else {
+            if (!file_exists($this->getFilename()) || !is_readable($this->getFilename())) {
+                throw new \Exception("Could not open " . $this->getFilename() . " for reading! File does not exist.", 1491290697);
+            }
 
-        $this->csvFileHandle = fopen($this->getFilename(), 'r');
+            $this->csvFileHandle = fopen($this->getFilename(), 'r');
+        }
 
         $this->initializeRowHeader();
     }
