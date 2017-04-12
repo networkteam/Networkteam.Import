@@ -52,58 +52,65 @@ class CsvDataProvider implements DataProviderInterface
 
     /**
      * @return string
-     * @throws \Networkteam\Import\Exception\ConfigurationException
      */
     protected function getFilename() {
-        if (isset($this->options[self::KEY_FILENAME])) {
-            return (string)$this->options[self::KEY_FILENAME];
-        }
-
-        throw new ConfigurationException(sprintf('Missing option %s for %s', self::KEY_FILENAME, __CLASS__), 1491316171);
+        return (string)$this->getOption(self::KEY_FILENAME);
     }
 
+    /**
+     * @return resource a file pointer resource
+     * @throws ConfigurationException
+     */
     protected function getFileHandle() {
-        if (isset($this->options[self::KEY_FILE_HANDLE])) {
-            return $this->options[self::KEY_FILE_HANDLE];
+        $fileHandle = $this->getOption(self::KEY_FILE_HANDLE);
+
+        if (!is_resource($fileHandle)) {
+            throw new ConfigurationException(sprintf('%s option is not of type resource in %s', self::KEY_FILE_HANDLE, __METHOD__), 1491988981);
         }
 
-        throw new ConfigurationException(sprintf('Missing option %s for %s', self::KEY_FILE_HANDLE, __CLASS__), 1491495926);
+        return $fileHandle;
     }
 
     /**
      * @return string
-     * @throws ConfigurationException
      */
     protected function getDelimiter() {
-        if (isset($this->options[self::KEY_DELIMITER])) {
-            return (string)$this->options[self::KEY_DELIMITER];
-        }
-
-        throw new ConfigurationException(sprintf('Missing option %s for %s', self::KEY_DELIMITER, __CLASS__), 1491316311);
+        return (string)$this->getOption(self::KEY_DELIMITER);
     }
 
     /**
      * @return string
-     * @throws ConfigurationException
      */
     protected function getEnclosure() {
-        if (isset($this->options[self::KEY_ENCLOSURE])) {
-            return (string)$this->options[self::KEY_ENCLOSURE];
-        }
-
-        throw new ConfigurationException(sprintf('Missing option %s for %s', self::KEY_ENCLOSURE, __CLASS__), 1491316311);
+        return (string)$this->getOption(self::KEY_ENCLOSURE);
     }
 
     /**
      * @return bool
-     * @throws ConfigurationException
      */
     protected function useHeaderRow() {
-        if (isset($this->options[self::KEY_USE_HEADER_ROW])) {
-            return (bool)$this->options[self::KEY_USE_HEADER_ROW];
+        return (bool)$this->getOption(self::KEY_USE_HEADER_ROW);
+    }
+
+    /**
+     * @param string $key
+     * @return bool
+     */
+    protected function hasOption($key) {
+        return isset($this->options[$key]);
+    }
+
+    /**
+     * @param string $key
+     * @return mixed
+     * @throws ConfigurationException
+     */
+    protected function getOption($key) {
+        if (isset($this->options[$key])) {
+            return $this->options[$key];
         }
 
-        throw new ConfigurationException(sprintf('Missing option %s for %s', self::KEY_USE_HEADER_ROW, __CLASS__), 1491316529);
+        throw new ConfigurationException(sprintf('Missing option %s in %s', $key, __CLASS__), 1491316529);
     }
 
     /**
@@ -158,7 +165,7 @@ class CsvDataProvider implements DataProviderInterface
      */
     public function open()
     {
-        if (is_resource($this->getFileHandle())) {
+        if ($this->hasOption(self::KEY_FILE_HANDLE)) {
             $this->csvFileHandle = $this->getFileHandle();
         }
         else {
