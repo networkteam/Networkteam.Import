@@ -51,6 +51,11 @@ class CsvDataProvider implements DataProviderInterface
     protected $headerRow;
 
     /**
+     * @var boolean
+     */
+    protected $open = false;
+
+    /**
      * @return string
      */
     protected function getFilename() {
@@ -177,6 +182,7 @@ class CsvDataProvider implements DataProviderInterface
         }
 
         $this->initializeRowHeader();
+        $this->open = true;
     }
 
     /**
@@ -187,6 +193,8 @@ class CsvDataProvider implements DataProviderInterface
         if (is_resource($this->csvFileHandle)) {
             fclose($this->csvFileHandle);
         }
+
+        $this->open = false;
     }
 
     /**
@@ -194,7 +202,7 @@ class CsvDataProvider implements DataProviderInterface
      */
     public function setOptions(array $options)
     {
-        if ($this->rowNumber >= 0) {
+        if ($this->open) {
             throw new InvalidStateException('Cannot set options on an opened data provider', 1491315796);
         }
         $this->options = array_merge($this->options, $options);
