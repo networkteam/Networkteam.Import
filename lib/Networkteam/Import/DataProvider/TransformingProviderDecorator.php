@@ -9,6 +9,17 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 
 	const EXPRESSION_REGEX = '/\${([^}]*)}/';
 
+	const OPT_NAME_REPORT_MISSING = 'report-missing';
+
+	const OPT_PREFILL_KEYS = 'prefill-empty-keys';
+	/**
+	 * @var array
+	 */
+	protected $options = array(
+		self::OPT_NAME_REPORT_MISSING => TRUE,
+		self::OPT_PREFILL_KEYS => FALSE
+	);
+
 	/**
 	 * @var array
 	 */
@@ -47,8 +58,8 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 	 * @param array $rawData
 	 * @return array
 	 */
-	protected function transformData(array $rawData) {
-		$transformedData = array();
+	protected function transformData($rawData) {
+		$transformedData = $this->getEmptyArray();
 		foreach ($this->mapping as $transformedKey => $rawDataFieldKey) {
 			if ($this->keyIsExpression($rawDataFieldKey)) {
 				$transformedData[$transformedKey] = $this->getFieldValueByExpression($rawData, $rawDataFieldKey);
@@ -66,12 +77,12 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 	 * @throws \Networkteam\Import\Exception\ConfigurationException
 	 */
 	protected function getFieldDataByName(array $rawData, $rawFieldIdentifier) {
-		if (!array_key_exists($rawFieldIdentifier, $rawData)) {
+		if (!array_key_exists($rawFieldIdentifier, $rawData) && $this->options[self::OPT_NAME_REPORT_MISSING] === TRUE) {
 			$exceptionMessage = sprintf('The key "%s" was not found in the list of keys: %s', $rawFieldIdentifier, implode(', ', array_keys($rawData)));
 			throw new \Networkteam\Import\Exception\ConfigurationException($exceptionMessage, 1389792450);
 		}
 
-		return $rawData[$rawFieldIdentifier];
+		return isset($rawData[$rawFieldIdentifier]) ? $rawData[$rawFieldIdentifier] : '';
 	}
 
 	/**
@@ -88,7 +99,7 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 	 * @param array $rawData
 	 * @return string
 	 */
-	protected function getFieldValueByExpression(array $rawData, $rawDataFieldKey) {
+	protected function getFieldValueByExpression($rawData, $rawDataFieldKey) {
 		$exp = array();
 		preg_match(self::EXPRESSION_REGEX, $rawDataFieldKey, $exp);
 		$expression = new \Symfony\Component\ExpressionLanguage\ExpressionLanguage();
@@ -98,5 +109,27 @@ class TransformingProviderDecorator extends BaseProviderDecorator {
 		);
 		return $expression->evaluate($exp[1], $context);
 	}
+
+	/**
+	 * @param array $options
+	 */
+	public function setOptions(array $options) {
+		$this->options = array_merge($this->options, $options);
+	}
+
+	/**
+	 * fill empty array with keys from mapping to ensure presence of all keys in result
+	 */
+	protected function getEmptyArray() {
+		$resultArray = array();
+		if($this->options[self::OPT_PREFILL_KEYS] === TRUE) {
+			foreach(array_keys($this->mapping) as $keyName) {
+				$resultArray[$keyName] = NULL;
+			}
+		}
+
+		return $resultArray;
+	}
+
 
 }
