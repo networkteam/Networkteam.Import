@@ -84,7 +84,7 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 		$this->fieldNames = array();
 
 		$fieldNameRow = $this->iterator->current();
-		/** @var $cell \PHPExcel_Cell */
+		/** @var $cell \PhpOffice\PhpSpreadsheet\Cell\Cell */
 		foreach ($fieldNameRow->getCellIterator() as $cell) {
 			$this->fieldNames[$cell->getColumn()] = trim(mb_strtolower($cell->getValue(), 'UTF-8'));
 		}
@@ -139,7 +139,7 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 
 	public function open() {
 		$this->open = TRUE;
-		$worksheet = \PHPExcel_IOFactory::load($this->getFileName());
+		$worksheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($this->getFileName());
 		$this->initializeIteratorAndFieldNames($worksheet);
 	}
 
@@ -152,7 +152,7 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 	/**
 	 * @param \PHPExcel $workSheet
 	 */
-	protected function initializeIteratorAndFieldNames(\PHPExcel $workSheet) {
+	protected function initializeIteratorAndFieldNames(\PhpOffice\PhpSpreadsheet\Spreadsheet $workSheet) {
 		$this->workSheet = $workSheet;
 		$this->iterator = $workSheet->getActiveSheet()->getRowIterator();
 		$this->extractHeaderFieldNames();

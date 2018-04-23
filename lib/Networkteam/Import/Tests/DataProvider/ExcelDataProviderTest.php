@@ -22,7 +22,7 @@ class ExcelDataProviderTest extends \PHPUnit_Framework_TestCase {
 	);
 
 	public function setUp() {
-		if (!class_exists('\PHPExcel')) {
+		if (!class_exists('\PhpOffice\PhpSpreadsheet\IOFactory')) {
 			$this->markTestSkipped('phpexcel not installed');
 		}
 
