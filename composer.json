@@ -14,7 +14,7 @@
 		"symfony/expression-language": "~2.4"
 	},
 	"suggest": {
-		"phpoffice/phpexcel": "Used by the ExcelDataProvider to import Excel files"
+		"phpoffice/phpspreadsheet": "Used by the ExcelDataProvider to import Excel files"
 	},
 	"require-dev": {
 		"mockery/mockery": "0.9.*",

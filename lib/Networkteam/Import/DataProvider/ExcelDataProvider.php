@@ -139,8 +139,12 @@ class ExcelDataProvider implements \Networkteam\Import\DataProvider\DataProvider
 
 	public function open() {
 		$this->open = TRUE;
-		$worksheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($this->getFileName());
-		$this->initializeIteratorAndFieldNames($worksheet);
+		$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($this->getFileName());
+		$reader->setReadDataOnly(true);
+		$reader->setReadEmptyCells(true);
+		$spreadsheet = $reader->load($this->getFileName());
+
+		$this->initializeIteratorAndFieldNames($spreadsheet);
 	}
 
 	public function close() {
