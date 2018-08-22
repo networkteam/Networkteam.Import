@@ -161,6 +161,10 @@ class CsvDataProvider implements DataProviderInterface
         if (!$this->useHeaderRow()) {
             return $this->currentRow;
         } else {
+            if (count($this->headerRow) !== count($this->currentRow)) {
+                $exceptionMessage = sprintf('Current row count does not match header row count (current row: %s <=> header row: %s)', implode(',', $this->currentRow), implode(',', $this->headerRow));
+                throw new InvalidStateException($exceptionMessage, 1534926207);
+            }
             return array_combine($this->headerRow, $this->currentRow);
         }
     }
