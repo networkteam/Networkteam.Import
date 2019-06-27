@@ -44,6 +44,9 @@ abstract class EntityImporter extends AbstractImporter {
 			$this->entityManager->beginTransaction();
 			$this->entityManager->getConnection()->setRollbackOnly();
 		}
+
+		$this->beforeProcessRows();
+
 		foreach ($this->dataProvider as $dataHash) {
 			try {
 				$entity = $this->processRow($dataHash);
@@ -58,6 +61,8 @@ abstract class EntityImporter extends AbstractImporter {
 				}
 			}
 		}
+
+		$this->afterProcessRows();
 
 		$this->entityManager->getEventManager()->addEventListener(array('onFlush'), $this);
 		if ($this->isDryRun()) {
@@ -207,6 +212,16 @@ abstract class EntityImporter extends AbstractImporter {
 	protected function entityWillBeDeleted($entity) {
 		$this->importResult->incCountDeleted();
 	}
+
+	/**
+	 * Template method to perform logic before processing rows
+	 */
+	protected function beforeProcessRows() {}
+
+	/**
+	 * Template method to perform logic after processing rows
+	 */
+	protected function afterProcessRows() {}
 
 	/**
 	 * @return bool
