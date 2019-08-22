@@ -11,14 +11,14 @@
 	"require":{
 		"php": "> 5.3.0",
 		"Psr/Log": "~1.0",
-		"symfony/expression-language": "~2.4"
+		"symfony/expression-language": ">=2.4|~3.0|^4.0"
 	},
 	"suggest": {
 		"phpoffice/phpexcel": "Used by the ExcelDataProvider to import Excel files"
 	},
 	"require-dev": {
 		"mockery/mockery": "0.9.*",
-		"phpunit/phpunit": "~4.0.20",
+		"phpunit/phpunit": ">=4.0.20",
 		"phpoffice/phpexcel": "~1.8.0",
 		"doctrine/orm": "~2.2,>=2.2.3"
 	}
