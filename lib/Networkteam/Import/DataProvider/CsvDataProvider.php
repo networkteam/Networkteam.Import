@@ -270,7 +270,7 @@ class CsvDataProvider implements DataProviderInterface
     protected function validateFileEncoding(): void
     {
         try {
-            $content = stream_get_contents($this->getFileHandle(), 1048576);
+            $content = stream_get_contents($this->csvFileHandle, 1048576);
             if (!mb_check_encoding($content, $this->getFileEncoding())) {
                 throw new \Exception(sprintf('File content does not follow %s encoding.', $this->getFileEncoding()), 1578925169);
             }
