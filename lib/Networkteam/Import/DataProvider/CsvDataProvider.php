@@ -19,6 +19,10 @@ class CsvDataProvider implements DataProviderInterface
 
     const KEY_FILE_HANDLE = 'csv.fileHandle';
 
+    const KEY_FILE_ENCODING = 'csv.fileEncoding';
+
+    const KEY_FILE_ENCODING_VALIDATION_ENABLED = 'csv.fileEncodingValidationEnabled';
+
     const KEY_USE_HEADER_ROW = 'csv.useHeaderRow';
 
     /**
@@ -27,7 +31,9 @@ class CsvDataProvider implements DataProviderInterface
     protected $options = array(
         self::KEY_DELIMITER => ',',
         self::KEY_ENCLOSURE => '"',
-        self::KEY_USE_HEADER_ROW => true
+        self::KEY_USE_HEADER_ROW => true,
+        self::KEY_FILE_ENCODING => 'UTF-8',
+        self::KEY_FILE_ENCODING_VALIDATION_ENABLED => false
     );
 
     /**
@@ -95,6 +101,20 @@ class CsvDataProvider implements DataProviderInterface
      */
     protected function useHeaderRow() {
         return (bool)$this->getOption(self::KEY_USE_HEADER_ROW);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getFileEncoding() {
+        return (string)$this->getOption(self::KEY_FILE_ENCODING);
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isFileEncodingValidationEnabled() {
+        return (bool)$this->getOption(self::KEY_FILE_ENCODING_VALIDATION_ENABLED);
     }
 
     /**
@@ -174,20 +194,16 @@ class CsvDataProvider implements DataProviderInterface
      */
     public function open()
     {
-        if ($this->hasOption(self::KEY_FILE_HANDLE)) {
-            $this->csvFileHandle = $this->getFileHandle();
-        }
-        else {
-            if (!file_exists($this->getFilename()) || !is_readable($this->getFilename())) {
-                throw new \Exception("Could not open " . $this->getFilename() . " for reading! File does not exist.", 1491290697);
-            }
+        $this->setCsvFileHandle();
 
-            $this->csvFileHandle = fopen($this->getFilename(), 'r');
+        if ($this->isFileEncodingValidationEnabled()) {
+            $this->validateFileEncoding();
         }
 
         $this->initializeRowHeader();
         $this->open = true;
     }
+
 
     /**
      * {@inheritdoc}
@@ -212,7 +228,7 @@ class CsvDataProvider implements DataProviderInterface
         $this->options = array_merge($this->options, $options);
     }
 
-    protected function initializeRowHeader()
+    protected function initializeRowHeader(): void
     {
         if ($this->useHeaderRow()) {
             $this->next();
@@ -229,5 +245,39 @@ class CsvDataProvider implements DataProviderInterface
     public function getFieldNames()
     {
         return $this->headerRow;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function setCsvFileHandle(): void
+    {
+        if ($this->hasOption(self::KEY_FILE_HANDLE)) {
+            $this->csvFileHandle = $this->getFileHandle();
+        } else {
+            if (!file_exists($this->getFilename()) || !is_readable($this->getFilename())) {
+                throw new \Exception("Could not open " . $this->getFilename() . " for reading! File does not exist.",
+                    1491290697);
+            }
+
+            $this->csvFileHandle = fopen($this->getFilename(), 'r');
+        }
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function validateFileEncoding(): void
+    {
+        try {
+            $content = stream_get_contents($this->getFileHandle());
+            if (!mb_check_encoding($content, $this->getFileEncoding())) {
+                throw new \Exception(sprintf('File content does not follow %s encoding.', $this->getFileEncoding()), 1578925169);
+            }
+        } catch (ConfigurationException $e) {
+            throw new \Exception(sprintf('Could not validate file encoding due to configuration exception: %s', $e->getMessage()), 1578926968);
+        }
+
+        $this->rewind();
     }
 }
