@@ -12,7 +12,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
     /**
      * @param array $options
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         $this->options = array_merge($this->options, $options);
     }

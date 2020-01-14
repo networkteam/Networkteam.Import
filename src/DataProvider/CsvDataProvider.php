@@ -167,7 +167,8 @@ class CsvDataProvider implements DataProviderInterface
             $this->csvFileHandle = $this->getFileHandle();
         } else {
             if (!file_exists($this->getFilename()) || !is_readable($this->getFilename())) {
-                throw new \Exception("Could not open " . $this->getFilename() . " for reading! File does not exist.", 1491290697);
+                throw new \Exception("Could not open " . $this->getFilename() . " for reading! File does not exist.",
+                    1491290697);
             }
 
             $this->csvFileHandle = fopen($this->getFilename(), 'r');

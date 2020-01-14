@@ -73,7 +73,7 @@ abstract class EntityImporter extends AbstractImporter
                 if ($this->isDryRun()) {
                     try {
                         $this->entityManager->flush();
-                    } catch (\Doctrine\DBAL\ConnectionException $e) {
+                    } /** @noinspection PhpRedundantCatchClauseInspection */ catch (\Doctrine\DBAL\ConnectionException $e) {
                         if ($e->getMessage() !== 'Transaction commit failed because the transaction has been marked for rollback only.') {
                             throw $e;
                         }
@@ -141,7 +141,8 @@ abstract class EntityImporter extends AbstractImporter
     protected function updateProperty($object, array $dataHash, string $propertyName): void
     {
         list($getter, $setter) = $this->createGetterSetterForPropertyName($propertyName);
-        $isExecutable = method_exists($object, $getter) && method_exists($object, $setter) && isset($dataHash[$propertyName]);
+        $isExecutable = method_exists($object, $getter) && method_exists($object,
+                $setter) && isset($dataHash[$propertyName]);
         if ($isExecutable) {
             $valuesDiffer = $object->$getter() !== $dataHash[$propertyName];
             if ($valuesDiffer) {

@@ -4,8 +4,6 @@ namespace Networkteam\Import\Tests;
 use Networkteam\Import\ImportResult;
 use PHPUnit\Framework\TestCase;
 
-
-
 class ImportResultTest extends TestCase
 {
 

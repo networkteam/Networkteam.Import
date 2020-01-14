@@ -93,7 +93,7 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
     /**
      * {@inheritDoc}
      */
-    public function current()
+    public function current(): array
     {
         return current($this->data);
     }
@@ -102,7 +102,7 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
      * @throws \Networkteam\Import\Exception
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function open()
+    public function open(): void
     {
         $config = new \Doctrine\DBAL\Configuration();
         $params = $this->options['providerOptions'];
@@ -120,7 +120,7 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
     /**
      * {@inheritDoc}
      */
-    public function close()
+    public function close(): void
     {
         $this->connection = null;
     }

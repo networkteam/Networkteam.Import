@@ -56,7 +56,6 @@ class TransformingProviderDecorator extends BaseProviderDecorator
      * @param array $rawData
      * @return array
      * @throws ConfigurationException
-     * @throws \Networkteam\Import\Exception\InvalidStateException
      * @throws \Networkteam\Import\Exception
      */
     protected function transformData(array $rawData): array

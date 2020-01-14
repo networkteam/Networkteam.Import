@@ -1,8 +1,6 @@
 <?php
 namespace Networkteam\Import\Tests\DataProvider;
 
-
-
 use Networkteam\Import\DataProvider\CsvDataProvider;
 use PHPUnit\Framework\TestCase;
 

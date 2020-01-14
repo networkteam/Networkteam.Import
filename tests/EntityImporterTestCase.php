@@ -1,8 +1,6 @@
 <?php
 namespace Networkteam\Import\Tests;
 
-
-
 use Doctrine\ORM\UnitOfWork;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -11,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class EntityImporterTestCase extends TestCase
 {
+
     use MockeryPHPUnitIntegration;
 
     /**

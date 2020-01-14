@@ -95,7 +95,8 @@ class ExcelDataProvider implements DataProviderInterface
         }
 
         if ($this->fieldNames === []) {
-            throw new ConfigurationException('Empty map of field names, please specify a correct KEY_HEADER_POSITION option', 1399546177);
+            throw new ConfigurationException('Empty map of field names, please specify a correct KEY_HEADER_POSITION option',
+                1399546177);
         }
     }
 
