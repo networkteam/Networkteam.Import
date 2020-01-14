@@ -1,25 +1,29 @@
 {
-	"name": "networkteam/import",
-	"description": "Generic import framework",
-	"keywords": ["import", "dataprovider", "excel", "csv"],
-	"config": {
+    "name": "networkteam/import",
+    "description": "Generic import framework",
+    "keywords": ["import", "dataprovider", "excel", "csv"],
+    "license": "MIT",
+    "config": {
         "bin-dir": "bin"
     },
-	"autoload": {
-		"psr-0": { "Networkteam\\": "lib" }
-	},
-	"require":{
-		"php": "> 5.3.0",
-		"Psr/Log": "~1.0",
-		"symfony/expression-language": "~2.4"
-	},
-	"suggest": {
-		"phpoffice/phpspreadsheet": "Used by the ExcelDataProvider to import Excel files"
-	},
-	"require-dev": {
-		"mockery/mockery": "0.9.*",
-		"phpunit/phpunit": "~4.0.20",
-		"doctrine/orm": "~2.2,>=2.2.3",
-		"phpoffice/phpspreadsheet": "^1.2.1"
-	}
+    "autoload": {
+        "psr-4": { "Networkteam\\Import\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Networkteam\\Import\\Tests\\": "tests/" }
+    },
+    "require":{
+        "php": "^7.1",
+        "psr/log": "~1.0",
+        "symfony/expression-language": "~2.4"
+    },
+    "suggest": {
+        "phpoffice/phpspreadsheet": "Used by the ExcelDataProvider to import Excel files"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.0",
+        "phpunit/phpunit": "~8.5.2",
+        "doctrine/orm": "~2.2,>=2.2.3",
+        "phpoffice/phpspreadsheet": "^1.2.1"
+    }
 }

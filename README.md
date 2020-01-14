@@ -13,11 +13,9 @@ The abstract `EntityImporter` is a base class for imports using Doctrine ORM.
 Installation
 ------------
 
-Add the following require statement to the main `composer.json` file:
-
-	"require": {
-		"networkteam/import": "dev-master"
-	}
+```bash
+composer require networkteam/import
+```
 
 Usage
 -----
