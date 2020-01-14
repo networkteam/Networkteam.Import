@@ -58,9 +58,9 @@ The source is an Excel file containing the following fields:
 	use Networkteam\Import\DataProvider\ExcelDataProvider;
 
 	$dataProvider = new ExcelDataProvider();
-	$dataProvider->setOptions(array(
+	$dataProvider->setOptions([
 		ExcelDataProvider::KEY_FILENAME => '/path/to/your/excel/file.xls',
-	));
+	]);
 ```
 
 ## Handle custom properties
@@ -70,7 +70,7 @@ The name of the property to handle has to be placed in the *$customProperties*
 property of the importer. This is used to know which properties to skip in the default path of importing properties.
 
 ```php
-		protected $customProperties = array('phone_number');
+		protected $customProperties = ['phone_number'];
 ```
  To treat the property correctly implement the method *handleCustomProperty* like this.
 
@@ -81,10 +81,10 @@ property of the importer. This is used to know which properties to skip in the d
 	 * @param array $dataHash The full data hash of the current item
 	 * @param string $propertyName The property name of a custom property
 	 */
-	protected function handleCustomProperty($entity, array $dataHash, $propertyName) {
+	protected function handleCustomProperty($entity, array $dataHash, string $propertyName) {
 		switch ($propertyName) {
 			case 'phone_number':
-				$object->addPhoneNumber(new PhoneNumber($dataHash[$propertyName]));
+				$entity->addPhoneNumber(new PhoneNumber($dataHash[$propertyName]));
 		}
 	}
 ```
@@ -101,7 +101,7 @@ The method *fetchObjectToImport* is responsible for creating the object which wi
 	 * @param array $dataHash
 	 * @return Address
 	 */
-	protected function fetchObjectToImport($dataHash) {
+	protected function fetchObjectToImport(array $dataHash) {
 		$address = $this->repository->findOneBySourceId($dataHash['source_id']);
 		if ($address === NULL) {
 			$address = new Address();
@@ -127,15 +127,14 @@ To get a complete look at the details here is the complete importer class.
 		 *
 		 * @var array
 		 */
-		protected $customProperties = array('phone_number');
+		protected $customProperties = ['phone_number'];
 	
 		/**
-		 * @param DataProviderInterface $dataProvider
 		 * @param ObjectManager $entityManager
 		 * @param EntityRepository $repository
 		 */
-		public function __construct(DataProviderInterface $dataProvider, ObjectManager $entityManager, EntityRepository $repository) {
-			parent::__construct($dataProvider, $entityManager);
+		public function __construct(ObjectManager $entityManager, EntityRepository $repository) {
+			parent::__construct($entityManager);
 			$this->repository = $repository;
 		}
 	
@@ -145,9 +144,9 @@ To get a complete look at the details here is the complete importer class.
 		 * @param array $dataHash
 		 * @return Address
 		 */
-		protected function fetchObjectToImport($dataHash) {
+		protected function fetchObjectToImport(array $dataHash) {
 			$address = $this->repository->findOneBySourceId($dataHash['source_id']);
-			if ($address === NULL) {
+			if ($address === null) {
 				$address = new Address();
 			}
 	
@@ -159,10 +158,10 @@ To get a complete look at the details here is the complete importer class.
 		 * @param array $dataHash The full data hash of the current item
 		 * @param string $propertyName The property name of a custom property
 		 */
-		protected function handleCustomProperty($entity, array $dataHash, $propertyName) {
+		protected function handleCustomProperty($entity, array $dataHash, string $propertyName) {
 			switch ($propertyName) {
 				case 'phone_number':
-					$object->addPhoneNumber(new PhoneNumber($dataHash[$propertyName]));
+					$entity->addPhoneNumber(new PhoneNumber($dataHash[$propertyName]));
 			}
 		}
 	
@@ -177,7 +176,7 @@ The Import is now ready to process data.
 ```php
 $entityManager = $someContainer->getEntitiyManager();
 
-$importer = new AddressImporter($dataProvider, $entityManger);
-$importer->import();
+$importer = new AddressImporter($entityManger);
+$importer->import($dataProvider);
 
 ```
