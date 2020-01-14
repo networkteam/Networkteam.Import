@@ -1,50 +1,52 @@
 <?php
 namespace Networkteam\Import\Validation;
 
+class NotEmptyRowValidator implements RowValidationInterface
+{
 
+    /**
+     * @var array
+     */
+    protected $configuration = ['ignoreFields' => []];
 
-class NotEmptyRowValidator implements RowValidationInterface {
+    /**
+     * @param array $configuration
+     */
+    public function setConfiguration($configuration)
+    {
+        $this->configuration = $configuration;
+    }
 
-	/**
-	 * @var array
-	 */
-	protected $configuration = ['ignoreFields' => []];
+    /**
+     * @param array $ignoreFields
+     */
+    public function setIgnoreFields(array $ignoreFields)
+    {
+        $this->configuration['ignoreFields'] = $ignoreFields;
+    }
 
-	/**
-	 * @param array $configuration
-	 */
-	public function setConfiguration($configuration) {
-		$this->configuration = $configuration;
-	}
+    /**
+     * The row is considered valid as soon as there is one filled field, that is not ignored
+     *
+     * @param array $rowFields
+     * @return boolean
+     */
+    public function isValid(array $rowFields)
+    {
+        $ignoreFields = array_flip($this->configuration['ignoreFields']);
+        $totalFields = count($rowFields);
 
-	/**
-	 * @param array $ignoreFields
-	 */
-	public function setIgnoreFields(array $ignoreFields) {
-		$this->configuration['ignoreFields'] = $ignoreFields;
-	}
+        $emptyFields = 0;
+        foreach ($rowFields as $colName => $value) {
+            if (isset($ignoreFields[$colName])) {
+                $totalFields--;
+                continue;
+            }
+            if (trim($value) === '') {
+                $emptyFields++;
+            }
+        }
 
-	/**
-	 * The row is considered valid as soon as there is one filled field, that is not ignored
-	 *
-	 * @param array $rowFields
-	 * @return boolean
-	 */
-	public function isValid(array $rowFields) {
-		$ignoreFields = array_flip($this->configuration['ignoreFields']);
-		$totalFields = count($rowFields);
-
-		$emptyFields = 0;
-		foreach ($rowFields as $colName => $value) {
-			if (isset($ignoreFields[$colName])) {
-				$totalFields--;
-				continue;
-			}
-			if (trim($value) === '') {
-				$emptyFields++;
-			}
-		}
-
-		return ($emptyFields < $totalFields);
-	}
+        return ($emptyFields < $totalFields);
+    }
 }
