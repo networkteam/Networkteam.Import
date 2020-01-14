@@ -1,5 +1,6 @@
 Generic import framework
 ========================
+[![Build Status](https://travis-ci.org/networkteam/Networkteam.Import.svg?branch=master)](https://travis-ci.org/networkteam/Networkteam.Import)
 
 Imports are based on data providers that generate or transform data. A data provider is basically an iterator returning
 array values for each row in the data set. By composing data providers and transformers, more complex scenarios can be
@@ -7,8 +8,6 @@ implemented. This package provides a `TransformingProviderDecorator` that has a 
 the Symfony expression language for custom processing (e.g. renaming or combining fields).
 
 The abstract `EntityImporter` is a base class for imports using Doctrine ORM.
-
-[![Build Status](https://travis-ci.org/networkteam/Networkteam.Import.png?branch=master)](https://travis-ci.org/networkteam/Networkteam.Import)
 
 Installation
 ------------
@@ -32,4 +31,4 @@ For further examples and how to handle different tasks look into the documentati
 License
 -------
 
-This package is released under the [MIT license](http://opensource.org/licenses/MIT).
+This package is released under the [MIT license](LICENSE).
