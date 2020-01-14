@@ -17,9 +17,9 @@ when the source changes but the Decorator chain stays the same.
 $dataProvider = ...
 
 $notEmptyValidator = new NotEmptyRowValidator();
-$notEmptyValidator->setConfiguration(array(
-	'ignoreFields' => array('phone_number')
-));
+$notEmptyValidator->setConfiguration([
+	'ignoreFields' => ['phone_number']
+]);
 
 $rowValidator = new RowValidationDecorator($dataProvider);
 $rowValidator->setValidator($notEmptyValidator);
