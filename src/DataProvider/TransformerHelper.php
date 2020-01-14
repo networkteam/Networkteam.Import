@@ -116,7 +116,7 @@ class TransformerHelper
         if ($index === false) {
             return -1;
         }
-        return (integer)$index;
+        return (int)$index;
     }
 
     /**
@@ -140,7 +140,7 @@ class TransformerHelper
         if ($index === false) {
             return -1;
         }
-        return (integer)$index;
+        return (int)$index;
     }
 
     /**
@@ -325,7 +325,7 @@ class TransformerHelper
      * @param string $string
      * @return float
      */
-    public function toFloat($string): float
+    public function toFloat(string $string): float
     {
         return (float)$string;
     }
@@ -338,9 +338,9 @@ class TransformerHelper
      * @param string $string
      * @return bool
      */
-    public function toBoolean($string): bool
+    public function toBoolean(string $string): bool
     {
-        return strtolower($string) === 'true' || (integer)$string === 1;
+        return strtolower($string) === 'true' || (int)$string === 1;
     }
 
     /**

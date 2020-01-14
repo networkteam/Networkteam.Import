@@ -66,7 +66,7 @@ abstract class AbstractImporter implements ImporterInterface
      * @param string $message
      * @param string $level
      */
-    protected function log($message, $level = \Psr\Log\LogLevel::NOTICE)
+    protected function log($message, $level = \Psr\Log\LogLevel::NOTICE): void
     {
         if ($this->logger !== null) {
             $this->logger->log($level, $message);
@@ -77,7 +77,7 @@ abstract class AbstractImporter implements ImporterInterface
      * @param \Exception $exception
      * @throws \Exception
      */
-    protected function handleException(\Exception $exception)
+    protected function handleException(\Exception $exception): void
     {
         $this->importResult->addError($exception->getMessage());
 

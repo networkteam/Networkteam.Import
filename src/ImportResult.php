@@ -8,7 +8,7 @@ class ImportResult {
 	/**
 	 * @var array
 	 */
-	protected $errors = array();
+	protected $errors = [];
 
 	/**
 	 * @var integer

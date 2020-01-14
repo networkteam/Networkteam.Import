@@ -52,7 +52,7 @@ abstract class BaseProviderDecorator implements DataProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function open()
+    public function open(): void
     {
         $this->dataProvider->open();
     }
@@ -60,7 +60,7 @@ abstract class BaseProviderDecorator implements DataProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function close()
+    public function close(): void
     {
         $this->dataProvider->close();
     }
@@ -68,7 +68,7 @@ abstract class BaseProviderDecorator implements DataProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         $this->dataProvider->setOptions($options);
     }

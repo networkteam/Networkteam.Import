@@ -11,7 +11,7 @@ class NullDataProvider implements DataProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function current()
+    public function current(): array
     {
         return current($this->data);
     }
@@ -51,21 +51,21 @@ class NullDataProvider implements DataProviderInterface
     /**
      * @param array $options
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
     }
 
     /**
      * @throws \Networkteam\Import\Exception
      */
-    public function open()
+    public function open(): void
     {
     }
 
     /**
      * @throws \Networkteam\Import\Exception
      */
-    public function close()
+    public function close(): void
     {
     }
 }

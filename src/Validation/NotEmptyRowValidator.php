@@ -8,7 +8,7 @@ class NotEmptyRowValidator implements RowValidationInterface {
 	/**
 	 * @var array
 	 */
-	protected $configuration = array('ignoreFields' => array());
+	protected $configuration = ['ignoreFields' => []];
 
 	/**
 	 * @param array $configuration

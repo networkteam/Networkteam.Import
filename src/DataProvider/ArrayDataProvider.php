@@ -49,7 +49,7 @@ class ArrayDataProvider implements DataProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function current()
+    public function current(): array
     {
         return $this->iterator->current();
     }
@@ -57,21 +57,21 @@ class ArrayDataProvider implements DataProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function open()
+    public function open(): void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function close(): void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
     }
 }

@@ -30,7 +30,7 @@ class PagingProviderDecorator extends BaseProviderDecorator
     /**
      * {@inheritdoc}
      */
-    public function current()
+    public function current(): array
     {
         return $this->dataProvider->current();
     }
@@ -65,7 +65,7 @@ class PagingProviderDecorator extends BaseProviderDecorator
     /**
      * {@inheritdoc}
      */
-    public function open()
+    public function open(): void
     {
         parent::open();
         $this->skipToOffset();
@@ -82,7 +82,7 @@ class PagingProviderDecorator extends BaseProviderDecorator
     /**
      * {@inheritdoc}
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         if (array_key_exists(self::KEY_OFFSET, $options)) {
             $this->offset = $options[self::KEY_OFFSET];

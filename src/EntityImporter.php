@@ -14,6 +14,10 @@ abstract class EntityImporter extends AbstractImporter
     protected $entityManager;
 
     /**
+     * List of fields that should not be updated via $entity->setFieldName($value)
+     *
+     * The method handleCustomProperty needs to implement a case for each listed field.
+     *
      * @var array
      */
     protected $customProperties = [];
@@ -134,11 +138,10 @@ abstract class EntityImporter extends AbstractImporter
      * @param array $dataHash
      * @param string $propertyName
      */
-    protected function updateProperty($object, array $dataHash, string $propertyName)
+    protected function updateProperty($object, array $dataHash, string $propertyName): void
     {
         list($getter, $setter) = $this->createGetterSetterForPropertyName($propertyName);
-        $isExecutable = method_exists($object, $getter) && method_exists($object,
-                $setter) && isset($dataHash[$propertyName]);
+        $isExecutable = method_exists($object, $getter) && method_exists($object, $setter) && isset($dataHash[$propertyName]);
         if ($isExecutable) {
             $valuesDiffer = $object->$getter() !== $dataHash[$propertyName];
             if ($valuesDiffer) {
@@ -151,10 +154,11 @@ abstract class EntityImporter extends AbstractImporter
      * @param string $propertyName
      * @return array
      */
-    protected function createGetterSetterForPropertyName($propertyName)
+    protected function createGetterSetterForPropertyName($propertyName): array
     {
-        $getter = 'get' . ucfirst($propertyName);
-        $setter = 'set' . ucfirst($propertyName);
+        $upperPropertyName = ucfirst($propertyName);
+        $getter = 'get' . $upperPropertyName;
+        $setter = 'set' . $upperPropertyName;
 
         return [$getter, $setter];
     }
@@ -165,7 +169,7 @@ abstract class EntityImporter extends AbstractImporter
      *
      * @param OnFlushEventArgs $event
      */
-    public function onFlush(OnFlushEventArgs $event)
+    public function onFlush(OnFlushEventArgs $event): void
     {
         $unitOfWork = $event->getEntityManager()->getUnitOfWork();
 
@@ -183,7 +187,7 @@ abstract class EntityImporter extends AbstractImporter
     /**
      * @param array $options
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         $this->options = $options;
     }
@@ -209,7 +213,7 @@ abstract class EntityImporter extends AbstractImporter
      *
      * @param object $entity
      */
-    protected function entityWillBeInserted($entity)
+    protected function entityWillBeInserted($entity): void
     {
         $this->importResult->incCountImported();
     }
@@ -219,7 +223,7 @@ abstract class EntityImporter extends AbstractImporter
      *
      * @param object $entity
      */
-    protected function entityWillBeUpdated($entity)
+    protected function entityWillBeUpdated($entity): void
     {
         $this->importResult->incCountUpdated();
     }
@@ -229,7 +233,7 @@ abstract class EntityImporter extends AbstractImporter
      *
      * @param object $entity
      */
-    protected function entityWillBeDeleted($entity)
+    protected function entityWillBeDeleted($entity): void
     {
         $this->importResult->incCountDeleted();
     }
@@ -237,21 +241,18 @@ abstract class EntityImporter extends AbstractImporter
     /**
      * Template method to perform logic before processing rows
      */
-    protected function beforeProcessRows()
+    protected function beforeProcessRows(): void
     {
     }
 
     /**
      * Template method to perform logic after processing rows
      */
-    protected function afterProcessRows()
+    protected function afterProcessRows(): void
     {
     }
 
-    /**
-     * @return bool
-     */
-    protected function isDryRun()
+    protected function isDryRun(): bool
     {
         return isset($this->options['dry-run']) && $this->options['dry-run'] === true;
     }

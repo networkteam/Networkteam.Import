@@ -144,7 +144,7 @@ class CsvDataProvider implements DataProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function current()
+    public function current(): array
     {
         if (!$this->useHeaderRow()) {
             return $this->currentRow;
@@ -161,7 +161,7 @@ class CsvDataProvider implements DataProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function open()
+    public function open(): void
     {
         if ($this->hasOption(self::KEY_FILE_HANDLE)) {
             $this->csvFileHandle = $this->getFileHandle();
@@ -180,7 +180,7 @@ class CsvDataProvider implements DataProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function close(): void
     {
         if (is_resource($this->csvFileHandle)) {
             fclose($this->csvFileHandle);
@@ -192,7 +192,7 @@ class CsvDataProvider implements DataProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         if ($this->open) {
             throw new InvalidStateException('Cannot set options on an opened data provider', 1491315796);

@@ -9,15 +9,15 @@ use Networkteam\Import\Exception\ConfigurationException;
  * Usage:
  * $provider = eDoctrineDbalProvider();
  * $provider->setOptions(
- *    array(
- *        'providerOptions' => array(
+ *    [
+ *        'providerOptions' => [
  *            'path' => 'sqlite.db'
  *            'driver' => 'pdo_sqlite'
- *        ),
- *        'parameters' => array(
+ *        ],
+ *        'parameters' => [
  *            'type' => 'goodUser'
- *        )
- *    )
+ *        ]
+ *    ]
  * );
  * $provider->setQuery('SELECT * FROM users WHERE type=:type');
  *
@@ -51,12 +51,12 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
     /**
      * @var array
      */
-    protected $options = array(
-        'providerOptions' => array(),
+    protected $options = [
+        'providerOptions' => [],
         'user' => null,
         'password' => null,
         'options' => null
-    );
+    ];
 
     /**
      * {@inheritDoc}

@@ -46,7 +46,7 @@ class TransformingProviderDecorator extends BaseProviderDecorator
     /**
      * {@inheritdoc}
      */
-    public function current()
+    public function current(): array
     {
         $rawData = $this->dataProvider->current();
         return $this->transformData($rawData);
@@ -57,6 +57,7 @@ class TransformingProviderDecorator extends BaseProviderDecorator
      * @return array
      * @throws ConfigurationException
      * @throws \Networkteam\Import\Exception\InvalidStateException
+     * @throws \Networkteam\Import\Exception
      */
     protected function transformData(array $rawData): array
     {
@@ -94,6 +95,12 @@ class TransformingProviderDecorator extends BaseProviderDecorator
         return preg_match(self::EXPRESSION_REGEX, $rawFieldIdentifier, $matches) === 1;
     }
 
+    /**
+     * @param array $rawData
+     * @param string $rawDataFieldKey
+     * @return mixed
+     * @throws \Networkteam\Import\Exception
+     */
     protected function getFieldValueByExpression(array $rawData, string $rawDataFieldKey)
     {
         $exp = [];

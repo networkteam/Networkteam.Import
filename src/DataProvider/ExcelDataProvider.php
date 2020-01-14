@@ -54,7 +54,7 @@ class ExcelDataProvider implements DataProviderInterface
      * @param array $options
      * @throws InvalidStateException
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         if ($this->open) {
             throw new InvalidStateException('Cannot set options on an opened data provider', 1399470312);
@@ -107,7 +107,7 @@ class ExcelDataProvider implements DataProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function current()
+    public function current(): array
     {
         return $this->getDataSet();
     }
@@ -145,7 +145,7 @@ class ExcelDataProvider implements DataProviderInterface
         $this->moveIteratorBehindHeaderOffset();
     }
 
-    public function open()
+    public function open(): void
     {
         $this->open = true;
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($this->getFileName());
@@ -156,7 +156,7 @@ class ExcelDataProvider implements DataProviderInterface
         $this->initializeIteratorAndFieldNames($spreadsheet);
     }
 
-    public function close()
+    public function close(): void
     {
         $this->open = false;
         $this->workSheet = null;
