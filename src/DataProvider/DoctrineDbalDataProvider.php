@@ -79,7 +79,7 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
     /**
      * {@inheritDoc}
      */
-    public function next()
+    public function next(): void
     {
         $this->data = $this->statement->fetch(\PDO::FETCH_ASSOC);
         $this->key++;
@@ -88,7 +88,7 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
     /**
      * {@inheritDoc}
      */
-    public function key()
+    public function key(): int
     {
         return $this->key;
     }
@@ -96,7 +96,7 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
     /**
      * {@inheritDoc}
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->data !== false;
     }
@@ -104,11 +104,13 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
     /**
      * {@inheritDoc}
      */
-    public function rewind()
+    public function rewind(): void
     {
+        // Execute prepared statement on rewind
         $this->statement->execute($this->options[self::KEY_PARAMETERS] ?? null);
-        $this->key = -1;
 
+        // Pre-fetch first row to allow check for validity
+        $this->key = -1;
         $this->next();
     }
 
@@ -117,6 +119,10 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
      */
     public function current(): array
     {
+        if ($this->data === null || $this->data === false) {
+            return [];
+        }
+
         return $this->data;
     }
 
