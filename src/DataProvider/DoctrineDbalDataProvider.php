@@ -1,13 +1,21 @@
 <?php
 namespace Networkteam\Import\DataProvider;
 
+use Doctrine\DBAL\Configuration as DBALConfiguration;
+use Doctrine\DBAL\Driver\PDOConnection;
+use Doctrine\DBAL\Driver\PDOStatement;
+use Doctrine\DBAL\DriverManager;
 use Networkteam\Import\Exception\ConfigurationException;
 
 /**
- * Receive data from a database using doctrine dbal
+ * Receive data from a database using Doctrine DBAL
+ *
+ * Rows wil be fetched while iterating over the data provider
+ * as associative arrays.
  *
  * Usage:
- * $provider = eDoctrineDbalProvider();
+ *
+ * $provider = new DoctrineDbalDataProvider();
  * $provider->setOptions(
  *    [
  *        'providerOptions' => [
@@ -21,27 +29,34 @@ use Networkteam\Import\Exception\ConfigurationException;
  * );
  * $provider->setQuery('SELECT * FROM users WHERE type=:type');
  *
- * foreach($provider as $user) {
+ * foreach ($provider as $user) {
  *    ...
  * }
  */
 class DoctrineDbalDataProvider extends AbstractDataProvider
 {
 
+    const KEY_PROVIDER_OPTIONS = 'providerOptions';
+    const KEY_PARAMETERS = 'parameters';
+
     /**
-     * @var \Doctrine\DBAL\Driver\PDOConnection
+     * @var PDOConnection
      */
     protected $connection;
 
     /**
-     * @var \Doctrine\DBAL\Driver\PDOStatement
+     * Current executed statement
+     *
+     * @var PDOStatement
      */
-    protected $statement;
+    protected $statement = null;
 
     /**
+     * Current row
+     *
      * @var array
      */
-    protected $data;
+    protected $data = null;
 
     /**
      * @var string
@@ -52,42 +67,51 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
      * @var array
      */
     protected $options = [
-        'providerOptions' => [],
-        'user' => null,
-        'password' => null,
-        'options' => null
+        self::KEY_PROVIDER_OPTIONS => [],
+        self::KEY_PARAMETERS => null,
     ];
 
     /**
+     * @var int
+     */
+    protected $key;
+
+    /**
      * {@inheritDoc}
      */
-    public function next()
+    public function next(): void
     {
-        next($this->data);
+        $this->data = $this->statement->fetch(\PDO::FETCH_ASSOC);
+        $this->key++;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function key()
+    public function key(): int
     {
-        return key($this->data);
+        return $this->key;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function valid()
+    public function valid(): bool
     {
-        return current($this->data);
+        return $this->data !== false;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function rewind()
+    public function rewind(): void
     {
-        reset($this->data);
+        // Execute prepared statement on rewind
+        $this->statement->execute($this->options[self::KEY_PARAMETERS] ?? null);
+
+        // Pre-fetch first row to allow check for validity
+        $this->key = -1;
+        $this->next();
     }
 
     /**
@@ -95,7 +119,11 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
      */
     public function current(): array
     {
-        return current($this->data);
+        if ($this->data === null || $this->data === false) {
+            return [];
+        }
+
+        return $this->data;
     }
 
     /**
@@ -104,17 +132,15 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
      */
     public function open(): void
     {
-        $config = new \Doctrine\DBAL\Configuration();
-        $params = $this->options['providerOptions'];
-        $this->connection = \Doctrine\DBAL\DriverManager::getConnection($params, $config);
+        $config = new DBALConfiguration();
+        $params = $this->options[self::KEY_PROVIDER_OPTIONS];
+        $this->connection = DriverManager::getConnection($params, $config);
 
         if ($this->query == null) {
-            throw new ConfigurationException('Please set a query with setQuery() first.');
+            throw new ConfigurationException('Please set a query with setQuery() first');
         }
 
         $this->statement = $this->connection->prepare($this->query);
-        $this->statement->execute(isset($this->options['parameters']) ? $this->options['parameters'] : null);
-        $this->data = $this->statement->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /**
@@ -122,6 +148,18 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
      */
     public function close(): void
     {
+        $this->statement->closeCursor();
+        $this->statement = null;
         $this->connection = null;
+    }
+
+    /**
+     * Set the query to execute when opening this data provider
+     *
+     * @param string $query
+     */
+    public function setQuery(string $query): void
+    {
+        $this->query = $query;
     }
 }

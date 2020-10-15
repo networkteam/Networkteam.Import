@@ -13,7 +13,7 @@
         "psr-4": { "Networkteam\\Import\\Tests\\": "tests/" }
     },
     "require":{
-        "php": "^7.1",
+        "php": "^7.2",
         "psr/log": "~1.0",
         "symfony/expression-language": ">=2.4|~3.0|~4.0|~5.0"
     },
@@ -21,6 +21,7 @@
         "phpoffice/phpspreadsheet": "Used by the ExcelDataProvider to import Excel files"
     },
     "require-dev": {
+        "ext-pdo": "*",
         "mockery/mockery": "^1.0",
         "phpunit/phpunit": "~8.5.2",
         "doctrine/orm": "~2.2,>=2.2.3",
