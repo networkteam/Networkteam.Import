@@ -1,7 +1,7 @@
 <?php
 namespace Networkteam\Import;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Networkteam\Import\DataProvider\DataProviderInterface;
 
@@ -9,7 +9,7 @@ abstract class EntityImporter extends AbstractImporter
 {
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     protected $entityManager;
 
@@ -32,10 +32,7 @@ abstract class EntityImporter extends AbstractImporter
      */
     protected $options;
 
-    /**
-     * @param EntityManager $entityManager
-     */
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
