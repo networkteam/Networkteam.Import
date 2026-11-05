@@ -86,7 +86,7 @@ class DoctrineDbalDataProviderTest extends TestCase
         $rows = iterator_to_array($this->dataProvider);
         $this->assertCount(2, $rows);
 
-        $this->conn->executeUpdate('INSERT INTO articles VALUES (7, \'A whole lot of sevens\')');
+        $this->conn->executeStatement('INSERT INTO articles VALUES (7, \'A whole lot of sevens\')');
 
         $rows = iterator_to_array($this->dataProvider);
 
@@ -137,8 +137,8 @@ class DoctrineDbalDataProviderTest extends TestCase
     private function createFixtureData(): void
     {
         $this->conn = DriverManager::getConnection($this->baseOptions[DoctrineDbalDataProvider::KEY_PROVIDER_OPTIONS]);
-        $this->conn->executeUpdate('DROP TABLE IF EXISTS articles');
-        $this->conn->executeUpdate('CREATE TABLE articles (id INTEGER PRIMARY KEY, title TEXT)');
-        $this->conn->executeUpdate('INSERT INTO articles VALUES (42, \'Some fine shoes\'), (13, \'A nice hat\')');
+        $this->conn->executeStatement('DROP TABLE IF EXISTS articles');
+        $this->conn->executeStatement('CREATE TABLE articles (id INTEGER PRIMARY KEY, title TEXT)');
+        $this->conn->executeStatement('INSERT INTO articles VALUES (42, \'Some fine shoes\'), (13, \'A nice hat\')');
     }
 }

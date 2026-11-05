@@ -17,11 +17,15 @@
         "psr/log": "^1.0|^2.0|^3.0",
         "symfony/expression-language": ">=2.4|~3.0|~4.0|~5.0"
     },
+    "conflict": {
+        "doctrine/dbal": "<2.13"
+    },
     "suggest": {
         "phpoffice/phpspreadsheet": "Used by the ExcelDataProvider to import Excel files"
     },
     "require-dev": {
         "ext-pdo": "*",
+        "doctrine/dbal": "^2.13 || ^3.0",
         "mockery/mockery": "^1.0",
         "phpunit/phpunit": "~8.5.2",
         "doctrine/orm": ">=2.4.0",
