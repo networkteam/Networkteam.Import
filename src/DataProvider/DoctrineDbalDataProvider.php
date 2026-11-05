@@ -2,9 +2,9 @@
 namespace Networkteam\Import\DataProvider;
 
 use Doctrine\DBAL\Configuration as DBALConfiguration;
-use Doctrine\DBAL\Driver\PDOConnection;
-use Doctrine\DBAL\Driver\PDOStatement;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Result;
 use Networkteam\Import\Exception\ConfigurationException;
 
 /**
@@ -40,21 +40,21 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
     const KEY_PARAMETERS = 'parameters';
 
     /**
-     * @var PDOConnection
+     * @var Connection|null
      */
     protected $connection;
 
     /**
-     * Current executed statement
+     * Result of the currently executed query
      *
-     * @var PDOStatement
+     * @var Result|null
      */
-    protected $statement = null;
+    protected $result = null;
 
     /**
      * Current row
      *
-     * @var array
+     * @var array|false|null
      */
     protected $data = null;
 
@@ -81,7 +81,7 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
      */
     public function next(): void
     {
-        $this->data = $this->statement->fetch(\PDO::FETCH_ASSOC);
+        $this->data = $this->result->fetchAssociative();
         $this->key++;
     }
 
@@ -106,8 +106,9 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
      */
     public function rewind(): void
     {
-        // Execute prepared statement on rewind
-        $this->statement->execute($this->options[self::KEY_PARAMETERS] ?? null);
+        // Execute the query on rewind
+        $this->freeResult();
+        $this->result = $this->connection->executeQuery($this->query, $this->options[self::KEY_PARAMETERS] ?? []);
 
         // Pre-fetch first row to allow check for validity
         $this->key = -1;
@@ -128,19 +129,17 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
 
     /**
      * @throws \Networkteam\Import\Exception
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     public function open(): void
     {
-        $config = new DBALConfiguration();
-        $params = $this->options[self::KEY_PROVIDER_OPTIONS];
-        $this->connection = DriverManager::getConnection($params, $config);
-
         if ($this->query == null) {
             throw new ConfigurationException('Please set a query with setQuery() first');
         }
 
-        $this->statement = $this->connection->prepare($this->query);
+        $config = new DBALConfiguration();
+        $params = $this->options[self::KEY_PROVIDER_OPTIONS];
+        $this->connection = DriverManager::getConnection($params, $config);
     }
 
     /**
@@ -148,9 +147,20 @@ class DoctrineDbalDataProvider extends AbstractDataProvider
      */
     public function close(): void
     {
-        $this->statement->closeCursor();
-        $this->statement = null;
-        $this->connection = null;
+        $this->freeResult();
+        if ($this->connection !== null) {
+            $this->connection->close();
+            $this->connection = null;
+        }
+        $this->data = null;
+    }
+
+    private function freeResult(): void
+    {
+        if ($this->result !== null) {
+            $this->result->free();
+            $this->result = null;
+        }
     }
 
     /**
